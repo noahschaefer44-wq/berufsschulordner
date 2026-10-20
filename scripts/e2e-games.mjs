@@ -56,6 +56,37 @@ const games = {
     ok((await page.locator('.mn-hint').count()) > 0, 'Minenfeld: Hinweis im Training');
   },
 };
+games.sudoku = async () => {
+  await page.locator('.gh-box[data-game="sudoku"]').click();
+  await page.waitForSelector('.sd-panel');
+  await page.getByRole('radio', { name: 'Leicht' }).click();
+  await page.getByRole('button', { name: 'Rätsel setzen' }).click();
+  await page.waitForSelector('.sd-board');
+  await page.waitForTimeout(500);
+  const empty = page.locator('.sd-cell:not(.given)').first();
+  await empty.click();
+  await page.keyboard.press('Digit5');
+  await page.getByRole('button', { name: /Hinweis/ }).click();
+  await shot('sudoku');
+  ok((await page.locator('.sd-hint').count()) > 0, 'Sudoku: Hinweis');
+  await page.getByRole('button', { name: 'Neu', exact: true }).click();
+  await page.locator('.sd-variants button', { hasText: 'Killer' }).click();
+  await page.getByRole('radio', { name: 'Mittel' }).click();
+  await page.getByRole('button', { name: 'Rätsel setzen' }).click();
+  await page.waitForSelector('.sd-cage', { state: 'attached' });
+  await shot('sudoku-killer');
+  ok(true, 'Sudoku: Killer mit Käfigen');
+  await page.getByRole('button', { name: 'Schule' }).click();
+  await page.locator('.sd-lessons button').first().click();
+  await page.waitForSelector('.sd-task');
+  await shot('sudoku-schule');
+  ok(true, 'Sudoku: Schule mit Übung');
+  await page.getByRole('button', { name: 'Zum Rätsel' }).click();
+  await page.getByRole('button', { name: 'Eigenes' }).click();
+  await page.waitForSelector('.sd-board');
+  await page.getByRole('button', { name: 'Prüfen' }).click();
+  ok(true, 'Sudoku: Editor');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${e.message.split('\n')[0]}`); }

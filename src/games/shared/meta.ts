@@ -10,7 +10,7 @@ export interface GameMeta {
 
 export const GAMES: GameMeta[] = [
   { id: 'minen', name: 'Minenfeld', tagline: 'Räume das Feld, ohne zu raten.', genre: 'Logik' },
-  { id: 'sudoku', name: 'Rätselheft', tagline: 'Sudoku in neun Varianten, mit Technik-Schule.', genre: 'Logik' },
+  { id: 'sudoku', name: 'Rätselheft', tagline: 'Sudoku in sieben Varianten, mit Technik-Schule.', genre: 'Logik' },
   { id: 'bild', name: 'Bildrätsel', tagline: 'Nonogramme lösen, zeichnen, aus Fotos machen.', genre: 'Logik' },
   { id: 'lager', name: 'Lagerhaus', tagline: 'Kisten schieben – mit Editor und Löser.', genre: 'Denken' },
   { id: 'block', name: 'Blockfall', tagline: 'Fallende Steine, vom Anfänger bis zum Duell.', genre: 'Arcade' },

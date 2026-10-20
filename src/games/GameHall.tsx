@@ -12,6 +12,7 @@ export interface GameProps { onExit: () => void; daily?: boolean }
 
 const LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> }>> = {
   minen: () => import('./minen/MinenGame'),
+  sudoku: () => import('./sudoku/SudokuGame'),
 };
 const LAZY: Record<string, ComponentType<GameProps>> = Object.fromEntries(Object.entries(LOADERS).map(([k, f]) => [k, lazy(f)]));
 
