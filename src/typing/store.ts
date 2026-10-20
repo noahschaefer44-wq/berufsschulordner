@@ -3,9 +3,10 @@ import { useSyncExternalStore } from 'react';
 import { DEFAULT_DECKS } from './data';
 
 export interface Settings {
-  theme: 'dunkel' | 'terminal' | 'papier' | 'neon' | 'eigen';
-  accent: string; bg: string; fg: string;
-  font: 'mono' | 'jetbrains' | 'sans' | 'serif' | 'schreibmaschine' | 'hand';
+  appearance: 'auto' | 'hell' | 'dunkel';
+  wallpaper: 'aurora' | 'sonnenuntergang' | 'ozean' | 'wald' | 'graphit';
+  accent: string;
+  font: 'sans' | 'rounded' | 'serif' | 'mono' | 'jetbrains' | 'schreibmaschine' | 'hand';
   size: number;
   cursor: 'block' | 'linie' | 'unterstrich';
   sound: 'aus' | 'mechanisch' | 'schreibmaschine' | 'weich';
@@ -18,8 +19,8 @@ export interface Settings {
   goalMin: number;
 }
 export const DEFAULT_SETTINGS: Settings = {
-  theme: 'dunkel', accent: '#4fb07a', bg: '#101216', fg: '#e8eaed', font: 'jetbrains', size: 26, cursor: 'block',
-  sound: 'weich', volume: 0.5, confetti: true, layout: 'qwertz', lang: 'de', showKb: true, stopOnError: false, goalMin: 10,
+  appearance: 'auto', wallpaper: 'aurora', accent: '#0a84ff', font: 'sans', size: 26, cursor: 'linie',
+  sound: 'weich', volume: 0.5, confetti: true, layout: 'qwertz', lang: 'de', showKb: false, stopOnError: false, goalMin: 10,
 };
 
 export interface Run { t: number; mode: string; wpm: number; raw: number; acc: number; chars: number; secs: number; errs: number }
@@ -44,6 +45,8 @@ export interface TypingData {
   decks: Deck[];
   best: Record<string, number>;
   arcade: number;
+  /** Rennspiel: Rennen, Siege, Grand-Prix-Pokale */
+  races: number; wins: number; cups: { gold: number; silver: number; bronze: number };
 }
 
 const KEY = 'tp.v1';
@@ -54,7 +57,7 @@ function fresh(): TypingData {
   return {
     v: 1, settings: { ...DEFAULT_SETTINGS }, runs: [], keys: {}, pairs: {}, lessons: {}, xp: 0, days: {}, badges: [], texts: [], lists: [],
     decks: DEFAULT_DECKS.map((d) => ({ id: uid(), name: d.name, cards: d.cards.map((c) => ({ id: uid(), q: c.q, a: c.a, box: 0, due: 0 })) })),
-    best: {}, arcade: 0,
+    best: {}, arcade: 0, races: 0, wins: 0, cups: { gold: 0, silver: 0, bronze: 0 },
   };
 }
 
@@ -126,10 +129,12 @@ export const BADGES: BadgeDef[] = [
   { id: 'c100k', name: '100.000 Zeichen', info: 'Insgesamt 100.000 Zeichen getippt', test: (d) => totalChars(d) >= 100000 },
   { id: 'streak3', name: '3 Tage in Folge', info: 'Drei Tage hintereinander geübt', test: (d) => streakOf(d) >= 3 },
   { id: 'streak7', name: 'Wochenserie', info: 'Sieben Tage hintereinander geübt', test: (d) => streakOf(d) >= 7 },
-  { id: 'home', name: 'Grundreihe sitzt', info: 'Alle fünf Lektionen der Grundreihe geschafft', test: (d) => [1, 2, 3, 4, 5].every((i) => d.lessons[`home-${i}`]) },
-  { id: 'school', name: 'Schreibschule komplett', info: 'Alle Lektionen mindestens einmal geschafft', test: (d) => ['home', 'top', 'bot'].every((r) => [1, 2, 3, 4, 5].every((i) => d.lessons[`${r}-${i}`])) && !!d.lessons['saetze'] },
+  { id: 'home', name: 'Gut gestartet', info: 'Die ersten drei Stufen der Schreibschule geschafft', test: (d) => ['s1', 's2', 's3'].every((k) => d.lessons[k]) },
+  { id: 'school', name: 'Schreibschule komplett', info: 'Alle zehn Stufen geschafft', test: (d) => Array.from({ length: 10 }, (_, i) => `s${i + 1}`).every((k) => d.lessons[k]) },
   { id: 'hard', name: 'Nervenstärke', info: 'Hardcore-Übung ohne Fehler beendet', test: (d) => d.runs.some((r) => r.mode.includes('hardcore') && r.errs === 0 && r.chars >= 40) },
   { id: 'arcade', name: 'Wortjäger', info: '50 Punkte im Arcade-Modus', test: (d) => d.arcade >= 50 },
+  { id: 'race1', name: 'Pole-Position', info: 'Erstes Rennen gewonnen', test: (d) => d.wins >= 1 },
+  { id: 'cup', name: 'Pokalsieger', info: 'Einen Grand Prix gewonnen', test: (d) => d.cups.gold >= 1 },
   { id: 'night', name: 'Nachteule', info: 'Nach 22 Uhr geübt', test: (d) => d.runs.some((r) => new Date(r.t).getHours() >= 22) },
 ];
 

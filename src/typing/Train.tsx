@@ -1,29 +1,25 @@
 import { useEffect, useMemo, useState } from 'react';
-import { SNIPPETS, QUOTES } from './data';
+import { QUOTES, SNIPPETS } from './data';
 import { dailyText, randomSnippet, shuffle, sourceText, SOURCES, weakKeys, weakPairs, weakText } from './gen';
 import Keyboard from './Keyboard';
 import { layoutById } from './layouts';
-import TextRun, { type Racer } from './TextRun';
+import TextRun from './TextRun';
 import { useData } from './store';
 
-type Mode = 'sprint' | 'race' | 'quotes' | 'code' | 'wiki' | 'daily';
+type Mode = 'sprint' | 'quotes' | 'code' | 'wiki' | 'daily';
 const MODES: { id: Mode; name: string; info: string }[] = [
-  { id: 'sprint', name: 'Sprint', info: 'Tippe so viel du kannst in 15–120 Sekunden.' },
-  { id: 'race', name: 'Rennen', info: 'Tritt gegen Bots und deinen eigenen Geist an.' },
+  { id: 'sprint', name: 'Sprint', info: 'Tippe so viel du kannst in 15 bis 120 Sekunden.' },
   { id: 'quotes', name: 'Zitate', info: 'Kluge Sätze abtippen.' },
-  { id: 'code', name: 'Code', info: 'HTML, CSS, JavaScript, Python, SQL – Sonderzeichen üben.' },
+  { id: 'code', name: 'Code', info: 'HTML, CSS, JavaScript, Python, SQL und mehr.' },
   { id: 'wiki', name: 'Wikipedia', info: 'Zufälliger Artikel-Anfang (lädt online).' },
   { id: 'daily', name: 'Tagestext', info: 'Heute für alle derselbe Text – vergleichbar mit gestern.' },
-];
-const BOTS = [
-  { name: 'Schnecke', wpm: 20 }, { name: 'Azubi', wpm: 35 }, { name: 'Sekretär', wpm: 55 }, { name: 'Profi', wpm: 80 }, { name: 'Blitz', wpm: 110 },
 ];
 
 function cleanWiki(s: string): string {
   const t = s
     .replace(/[„“”«»]/g, '"').replace(/[‘’´`]/g, "'").replace(/[–—−]/g, '-').replace(/[   ]/g, ' ')
     .replace(/\([^)]*\)/g, '').replace(/\s+/g, ' ')
-    .replace(/[^\wäöüÄÖÜßéèêáàç .,;:!?()\-"'%€/0-9]/g, '').trim();
+    .replace(/[^\wäöüÄÖÜß .,;:!?()\-"'%€/0-9]/g, '').trim();
   const cut = t.slice(0, 380);
   const end = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('.'));
   return end > 120 ? cut.slice(0, end + 1) : cut;
@@ -33,38 +29,28 @@ export default function Train({ initial, autoStart }: { initial?: Mode; autoStar
   const d = useData();
   const lang = d.settings.lang;
   const [mode, setMode] = useState<Mode>(initial ?? 'sprint');
-  const [source, setSource] = useState('woerter');
-  const [time, setTime] = useState(30);
+  const [source, setSource] = useState(lang === 'en' ? 'englisch' : 'mix');
+  const [time, setTime] = useState(60);
   const [hard, setHard] = useState(false);
   const [blind, setBlind] = useState(false);
   const [zen, setZen] = useState(false);
-  const [bots, setBots] = useState<string[]>(['Azubi', 'Profi']);
   const [codeLang, setCodeLang] = useState('');
   const [round, setRound] = useState(0);
   const [go, setGo] = useState(!!autoStart);
   const [wiki, setWiki] = useState<{ text: string; title: string } | 'laden' | 'fehler'>('laden');
 
-  const ghostWpm = Math.round(d.best.race ?? d.best.sprint ?? 0);
-  const racers: Racer[] = useMemo(() => {
-    const r: Racer[] = BOTS.filter((b) => bots.includes(b.name));
-    if (bots.includes('Geist') && ghostWpm > 0) r.push({ name: 'Geist', wpm: ghostWpm });
-    return r;
-  }, [bots, ghostWpm]);
-
   const gen = useMemo(() => {
-    const timed = mode === 'sprint' && time > 0 && !zen;
     switch (mode) {
-      case 'sprint': return { text: sourceText(source, lang, timed ? 240 : 40, d.lists), prompt: null as React.ReactNode };
-      case 'race': return { text: sourceText(source === 'zitate' ? 'woerter' : source, lang, 38, d.lists), prompt: null };
+      case 'sprint': return { text: sourceText(source, time > 0 && !zen ? 1800 : 380), prompt: null as React.ReactNode };
       case 'quotes': {
-        const q = shuffle(QUOTES).slice(0, 2);
+        const q = shuffle(QUOTES).slice(0, 3);
         return { text: q.map((x) => x.text).join(' '), prompt: <small>{q.map((x) => x.by).join(' · ')}</small> };
       }
       case 'code': { const s = randomSnippet(codeLang); return { text: s.code, prompt: <small>{s.lang} · {s.title} – Enter für neue Zeile, ohne Einrückung</small> }; }
-      case 'daily': return { text: dailyText(lang), prompt: <small>Tagestext vom {new Date().toLocaleDateString('de-DE')}</small> };
+      case 'daily': return { text: dailyText(), prompt: <small>Tagestext vom {new Date().toLocaleDateString('de-DE')}</small> };
       default: return { text: '', prompt: null };
     }
-  }, [mode, source, time, zen, lang, round, codeLang, d.lists]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [mode, source, time, zen, round, codeLang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (mode !== 'wiki' || !go) return;
@@ -80,8 +66,6 @@ export default function Train({ initial, autoStart }: { initial?: Mode; autoStar
       .catch(() => alive && setWiki('fehler'));
     return () => { alive = false; };
   }, [mode, go, round, lang]);
-
-  const toggle = (arr: string[], x: string) => (arr.includes(x) ? arr.filter((y) => y !== x) : [...arr, x]);
 
   if (go) {
     const back = <button className="tp-link" onClick={() => setGo(false)}>‹ Einstellungen</button>;
@@ -102,8 +86,7 @@ export default function Train({ initial, autoStart }: { initial?: Mode; autoStar
         {back}
         <TextRun
           text={gen.text} mode={mode} timeLimit={timeLimit} hardcore={hard} blind={blind} zen={zen}
-          prompt={gen.prompt} racers={mode === 'race' ? racers : undefined}
-          recordKeys={mode !== 'code'}
+          prompt={gen.prompt} recordKeys={mode !== 'code'}
           onRestart={restart} onNext={restart} nextLabel="Nächster Text"
         />
       </section>
@@ -118,22 +101,21 @@ export default function Train({ initial, autoStart }: { initial?: Mode; autoStar
         {MODES.map((x) => <button key={x.id} className={x.id === mode ? 'on' : ''} onClick={() => setMode(x.id)}>{x.name}</button>)}
       </div>
       <p className="tp-sub">{m.info}</p>
-      <div className="tp-form">
-        {(mode === 'sprint' || mode === 'race') && (
-          <label>Textquelle
-            <select value={source} onChange={(e) => setSource(e.target.value)}>
-              {SOURCES.filter((s) => mode === 'sprint' || s.id !== 'zitate').map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
-              {d.lists.map((l) => <option key={l.id} value={`liste:${l.id}`}>Eigene Liste: {l.name}</option>)}
-            </select>
-          </label>
-        )}
+      <div className="tp-form glass">
         {mode === 'sprint' && (
-          <label>Zeit
-            <select value={time} onChange={(e) => setTime(+e.target.value)}>
-              {[15, 30, 60, 120].map((t) => <option key={t} value={t}>{t} Sekunden</option>)}
-              <option value={0}>Ohne Zeitlimit (40 Wörter)</option>
-            </select>
-          </label>
+          <>
+            <label>Thema
+              <select value={source} onChange={(e) => setSource(e.target.value)}>
+                {SOURCES.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </label>
+            <label>Zeit
+              <select value={time} onChange={(e) => setTime(+e.target.value)}>
+                {[15, 30, 60, 120].map((t) => <option key={t} value={t}>{t} Sekunden</option>)}
+                <option value={0}>Ohne Zeitlimit (ca. 3 Sätze)</option>
+              </select>
+            </label>
+          </>
         )}
         {mode === 'code' && (
           <label>Sprache
@@ -143,26 +125,9 @@ export default function Train({ initial, autoStart }: { initial?: Mode; autoStar
             </select>
           </label>
         )}
-        {mode === 'race' && (
-          <fieldset>
-            <legend>Gegner</legend>
-            {[...BOTS.map((b) => `${b.name}`), 'Geist'].map((n) => {
-              const b = BOTS.find((x) => x.name === n);
-              return (
-                <label key={n} className="tp-check">
-                  <input type="checkbox" checked={bots.includes(n)} onChange={() => setBots((a) => toggle(a, n))} />
-                  {n} {b ? `(${b.wpm} WPM)` : ghostWpm ? `(deine Bestzeit: ${ghostWpm} WPM)` : '(erst nach einer Übung)'}
-                </label>
-              );
-            })}
-          </fieldset>
-        )}
-        <fieldset>
-          <legend>Zusatzregeln</legend>
-          <label className="tp-check"><input type="checkbox" checked={hard} onChange={(e) => { setHard(e.target.checked); if (e.target.checked) setZen(false); }} />Hardcore – ein Fehler startet neu</label>
-          <label className="tp-check"><input type="checkbox" checked={blind} onChange={(e) => setBlind(e.target.checked)} />Blind – Getipptes verschwindet</label>
-          <label className="tp-check"><input type="checkbox" checked={zen} onChange={(e) => { setZen(e.target.checked); if (e.target.checked) setHard(false); }} />Zen – keine Zeit, kein Tempo</label>
-        </fieldset>
+        <label className="tp-check"><span>Hardcore – ein Fehler startet neu</span><input type="checkbox" checked={hard} onChange={(e) => { setHard(e.target.checked); if (e.target.checked) setZen(false); }} /></label>
+        <label className="tp-check"><span>Blind – Getipptes verschwindet</span><input type="checkbox" checked={blind} onChange={(e) => setBlind(e.target.checked)} /></label>
+        <label className="tp-check"><span>Zen – keine Zeit, kein Tempo</span><input type="checkbox" checked={zen} onChange={(e) => { setZen(e.target.checked); if (e.target.checked) setHard(false); }} /></label>
       </div>
       <button className="tp-btn main" onClick={() => { setGo(true); setRound((n) => n + 1); }}>Los geht’s</button>
     </section>
@@ -178,14 +143,14 @@ export function Weak() {
   const layout = layoutById(d.settings.layout);
   const weak = useMemo(() => weakKeys(d.keys, 8), [d.keys]);
   const pairs = useMemo(() => weakPairs(d.pairs), [d.pairs]);
-  const gen = useMemo(() => weakText(d.keys, d.settings.lang, 40), [round, go]); // eslint-disable-line react-hooks/exhaustive-deps
+  const gen = useMemo(() => weakText(d.keys), [round, go]); // eslint-disable-line react-hooks/exhaustive-deps
   const total = Object.values(d.keys).reduce((a, k) => a + k.n, 0);
 
   if (go) {
     return (
       <section>
         <button className="tp-link" onClick={() => setGo(false)}>‹ Übersicht</button>
-        <TextRun text={gen.text} mode="schwachstellen" prompt={gen.weak.length ? <small>Übe: {gen.weak.map((c) => c.toUpperCase()).join(' ')}</small> : <small>Noch keine Schwächen erkannt – normale Wörter.</small>} onRestart={() => setRound((n) => n + 1)} onNext={() => setRound((n) => n + 1)} nextLabel="Nächste Runde" />
+        <TextRun text={gen.text} mode="schwachstellen" prompt={gen.weak.length ? <small>Texte mit vielen: {gen.weak.map((c) => c.toUpperCase()).join(' ')}</small> : <small>Noch keine Schwächen erkannt – gemischte Texte.</small>} onRestart={() => setRound((n) => n + 1)} onNext={() => setRound((n) => n + 1)} nextLabel="Nächste Runde" />
       </section>
     );
   }
@@ -195,8 +160,8 @@ export function Weak() {
   };
   return (
     <section>
-      <h2>Schwachstellen-Training</h2>
-      <p className="tp-sub">Das Programm merkt sich jeden Anschlag ({total.toLocaleString('de-DE')} bisher) und baut Übungen aus deinen schwächsten Tasten.</p>
+      <h2>Schwachstellen</h2>
+      <p className="tp-sub">Das Programm merkt sich jeden Anschlag ({total.toLocaleString('de-DE')} bisher) und wählt Texte, in denen deine schwächsten Buchstaben besonders oft vorkommen.</p>
       {weak.length === 0 ? (
         <p>Noch zu wenig Daten – mach erst ein paar Übungen in der Schreibschule oder im Training.</p>
       ) : (
@@ -204,20 +169,20 @@ export function Weak() {
           <h3>Schwächste Tasten</h3>
           <div className="tp-weak">
             {weak.map((w) => (
-              <div key={w.ch}><b>{w.ch.toUpperCase()}</b><small>{Math.round(w.err * 100)} % Fehler · {Math.round(w.ms)} ms</small></div>
+              <div key={w.ch} className="glass"><b>{w.ch.toUpperCase()}</b><small>{Math.round(w.err * 100)} % Fehler · {Math.round(w.ms)} ms</small></div>
             ))}
           </div>
           {pairs.length > 0 && (
             <>
               <h3>Problematische Buchstabenpaare</h3>
-              <div className="tp-weak">{pairs.map((p) => <div key={p.pair}><b>{p.pair}</b><small>{Math.round(p.rate * 100)} % Fehler</small></div>)}</div>
+              <div className="tp-weak">{pairs.map((p) => <div key={p.pair} className="glass"><b>{p.pair}</b><small>{Math.round(p.rate * 100)} % Fehler</small></div>)}</div>
             </>
           )}
           <h3>Fehler-Wärmekarte</h3>
-          <Keyboard layout={layout} heat={heat} />
+          <div className="glass tp-pad"><Keyboard layout={layout} heat={heat} /></div>
         </>
       )}
-      <button className="tp-btn main" onClick={() => { setGo(true); setRound((n) => n + 1); }}>Schwachstellen üben</button>
+      <button className="tp-btn main" onClick={() => { setGo(true); setRound((n) => n + 1); }}>Schwachstellen-Texte üben</button>
     </section>
   );
 }

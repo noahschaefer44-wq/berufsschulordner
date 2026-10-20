@@ -45,35 +45,6 @@ div span href src class style margin padding border display flex grid color back
 git commit push pull merge branch checkout status clone rebase stash npm install build test deploy
 `);
 
-/** Kurze, deutsche Sätze mit Satzzeichen. */
-export const SENTENCES_DE = [
-  'Der schnelle braune Fuchs springt über den faulen Hund.',
-  'Übung macht den Meister, aber Geduld macht ihn glücklich.',
-  'Heute ist ein guter Tag, um etwas Neues zu lernen.',
-  'Wer rastet, der rostet; wer tippt, der trifft.',
-  'Die Rechnung über 1.250,00 € ist bis zum 30.11. fällig.',
-  'Bitte senden Sie uns das Angebot bis Freitag, 12 Uhr.',
-  'Zehn Finger, zehn Tasten, null Blicke auf die Tastatur!',
-  'Konzentration entsteht, wenn man ruhig atmet und gleichmäßig schreibt.',
-  'Im Büro stapeln sich Lieferscheine, Mahnungen und Kaffeetassen.',
-  'Morgen schreiben wir eine Arbeit über Prozentrechnung und Dreisatz.',
-  '„Wie viel kostet das?“, fragte der Kunde. „Genau 19,99 €“, sagte sie.',
-  'Das Passwort darf nicht „1234“ heißen – das errät jeder!',
-  'Zwei Äpfel, drei Birnen und ein Stück Käse für die Pause.',
-  'Schreibe langsam, aber ohne Fehler; Tempo kommt von allein.',
-  'Der Zug nach München fährt um 7:42 Uhr von Gleis 5 ab.',
-  'Süße Träume über große Straßen, grüne Wiesen und blaue Seen.',
-];
-
-export const SENTENCES_EN = [
-  'The quick brown fox jumps over the lazy dog.',
-  'Practice makes perfect, but patience makes it fun.',
-  'Please send us the invoice by Friday, 12 noon.',
-  'Typing fast is easy when you stay relaxed and keep your rhythm.',
-  'Dear Sir or Madam, we would like to place an order for 250 units.',
-  'Yours sincerely, Mr Smith (Head of Purchasing).',
-];
-
 export interface Quote { text: string; by: string }
 export const QUOTES: Quote[] = [
   { text: 'Der Mensch ist nur da ganz Mensch, wo er spielt.', by: 'Friedrich Schiller' },

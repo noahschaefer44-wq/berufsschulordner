@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { SENTENCES_DE, SENTENCES_EN } from './data';
-import { pick, pool, shuffle } from './gen';
+import { poolById } from './corpus';
+import { shuffle } from './gen';
 import { canSpeak, keySound, speak } from './sound';
 import { recordRun, useSettings } from './store';
 
@@ -9,7 +9,6 @@ type Item = { want: string; got: string };
 export default function Dictation() {
   const s = useSettings();
   const [lang, setLang] = useState(s.lang);
-  const [kind, setKind] = useState<'woerter' | 'saetze'>('woerter');
   const [started, setStarted] = useState(false);
   const [round, setRound] = useState(0);
   const [items, setItems] = useState<Item[]>([]);
@@ -19,10 +18,9 @@ export default function Dictation() {
 
   const list = useMemo(() => {
     if (!started) return [];
-    return kind === 'woerter'
-      ? Array.from({ length: 10 }, () => pick(pool(lang).filter((w) => w.length >= 4)))
-      : shuffle(lang === 'de' ? SENTENCES_DE : SENTENCES_EN).slice(0, 4);
-  }, [started, kind, lang, round]); // eslint-disable-line react-hooks/exhaustive-deps
+    const sentences = [...(poolById(lang === 'de' ? 'kurz' : 'englisch')?.texts ?? []), ...(poolById(lang === 'de' ? 'lang' : 'englisch')?.texts ?? [])];
+    return shuffle(sentences).slice(0, 5);
+  }, [started, lang, round]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { if (started && list[0]) speak(list[0], lang); }, [list]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -38,7 +36,7 @@ export default function Dictation() {
       <section>
         <h2>Diktat beendet</h2>
         <div className="tp-big">{ok} / {items.length} richtig</div>
-        <ul className="tp-list">
+        <ul className="tp-list glass">
           {items.map((i, k) => (
             <li key={k} className={i.want === i.got ? 'okrow' : 'badrow'}><span><b>{i.want}</b>{i.want !== i.got && <small>du: {i.got || '—'}</small>}</span></li>
           ))}
@@ -52,10 +50,9 @@ export default function Dictation() {
     return (
       <section>
         <h2>Diktat</h2>
-        <p className="tp-sub">Du hörst ein Wort oder einen Satz und tippst, was du verstanden hast – ideal für Rechtschreibung und Englisch-Vokabeln.</p>
+        <p className="tp-sub">Du hörst einen Satz und tippst, was du verstanden hast – ideal für Rechtschreibung und Hörverstehen. Satzzeichen und Großschreibung zählen mit.</p>
         <div className="tp-form">
           <label>Sprache<select value={lang} onChange={(e) => setLang(e.target.value as 'de' | 'en')}><option value="de">Deutsch</option><option value="en">Englisch</option></select></label>
-          <label>Art<select value={kind} onChange={(e) => setKind(e.target.value as 'woerter' | 'saetze')}><option value="woerter">10 Wörter</option><option value="saetze">4 Sätze</option></select></label>
         </div>
         <button className="tp-btn main" onClick={begin}>Diktat starten</button>
       </section>
@@ -71,7 +68,7 @@ export default function Dictation() {
   };
   return (
     <section>
-      <p className="tp-sub">{kind === 'woerter' ? 'Wort' : 'Satz'} {cur + 1} von {list.length}</p>
+      <p className="tp-sub">Satz {cur + 1} von {list.length}</p>
       <div className="tp-btns left">
         <button className="tp-btn" onClick={() => speak(list[cur], lang)}>🔊 Nochmal hören</button>
         <button className="tp-btn ghost" onClick={() => setShown(list[cur])}>Hinweis zeigen</button>

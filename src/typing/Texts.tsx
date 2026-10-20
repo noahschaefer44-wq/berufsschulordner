@@ -26,8 +26,6 @@ export default function Texts() {
   const [round, setRound] = useState(0);
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
-  const [listName, setListName] = useState('');
-  const [listWords, setListWords] = useState('');
 
   function start(t: string, raw: string) {
     const chunks = chunkText(raw);
@@ -77,7 +75,7 @@ export default function Texts() {
       {d.texts.length > 0 && (
         <>
           <h3>Gespeicherte Texte</h3>
-          <ul className="tp-list">
+          <ul className="tp-list glass">
             {d.texts.map((t) => (
               <li key={t.id}>
                 <span><b>{t.title}</b><small>{t.body.length} Zeichen</small></span>
@@ -91,7 +89,7 @@ export default function Texts() {
 
       <h3>Aus deinen Notizen</h3>
       {notes.length === 0 ? <p className="tp-sub">Keine Notizen vorhanden.</p> : (
-        <ul className="tp-list">
+        <ul className="tp-list glass">
           {notes.map((n, i) => (
             <li key={i}>
               <span><b>{n.title}</b><small>{n.folder}</small></span>
@@ -101,23 +99,6 @@ export default function Texts() {
         </ul>
       )}
 
-      <h3>Eigene Wortlisten</h3>
-      <p className="tp-sub">Für Sprint und Rennen auswählbar – z. B. Fachwörter aus dem Unterricht.</p>
-      <div className="tp-form">
-        <label>Name<input value={listName} onChange={(e) => setListName(e.target.value)} placeholder="z. B. LF3 Begriffe" /></label>
-        <label>Wörter (durch Leerzeichen oder Zeilen getrennt)<textarea rows={3} value={listWords} onChange={(e) => setListWords(e.target.value)} /></label>
-      </div>
-      <button className="tp-btn" disabled={!listName.trim() || !listWords.trim()} onClick={() => { update((x) => { x.lists = [...x.lists, { id: newId(), name: listName.trim(), words: listWords.trim() }]; }); setListName(''); setListWords(''); }}>Liste speichern</button>
-      {d.lists.length > 0 && (
-        <ul className="tp-list">
-          {d.lists.map((l) => (
-            <li key={l.id}>
-              <span><b>{l.name}</b><small>{l.words.split(/\s+/).filter(Boolean).length} Wörter</small></span>
-              <button className="tp-btn ghost" onClick={() => update((x) => { x.lists = x.lists.filter((y) => y.id !== l.id); })}>Löschen</button>
-            </li>
-          ))}
-        </ul>
-      )}
     </section>
   );
 }

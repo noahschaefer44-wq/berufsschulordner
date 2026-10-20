@@ -35,8 +35,10 @@ CI (`.github/workflows/ci.yml`) führt Typecheck, Build, Glossar- und Inhaltspr�
 - Browser-Tests müssen erst entsperren (siehe `scripts/e2e-smoke.mjs`; Tipptraining: `scripts/e2e-typing.mjs`).
 
 ## Tipptraining (`src/typing/`, unabhängig von Chessty)
-- Eigene App mit eigenem Design (Themes über CSS-Variablen `--tp-*`, nicht das Chessty-Schwarz/Weiß), lazy geladen aus dem Gate, Speicher `tp.v1` (localStorage, kein Server). Export/Import als JSON unter Einstellungen.
-- Dateien: `TypingApp.tsx` (Rahmen + Start), `TextRun.tsx` (Eingabe-Engine: WPM, Genauigkeit, Hardcore/Blind/Zen, Zeitlimit, Rennen), `Lessons.tsx` + `layouts.ts` (Schreibschule je Tastaturbelegung), `Train.tsx` (Sprint, Rennen, Zitate, Code, Wikipedia, Tagestext; Schwachstellen), `Texts.tsx`, `Cards.tsx` (Leitner-Karteikasten), `Arcade.tsx`, `Dictation.tsx`, `Stats.tsx`, `Settings.tsx`, `gen.ts` (Textgenerator), `data.ts` (Wortlisten, Sätze, Zitate, Code), `store.ts` (Daten, Abzeichen, XP), `sound.ts` (WebAudio, Sprachausgabe).
+- Eigene App, lazy geladen aus dem Gate, Speicher `tp.v1` (localStorage, kein Server). Export/Import als JSON unter Einstellungen.
+- **Design**: Apple-Stil mit „Liquid Glass“ (`typing.css`: Milchglas `.glass`, große Rundungen, Systemschrift, Hell/Dunkel/Auto, Wallpapers, Akzentfarben, Tab-Leiste am Handy). **Nur die Spiele** (`Games.tsx`, `RaceGame.tsx`, `Arcade.tsx`, Klassen `.wu-*` in `wiiu.css`) sind im Wii-U-Stil (weiß/cyan, glänzende Knöpfe, Miis, GamePad-Rahmen). Die globale Regel „keine runden Ecken“ aus `global.css` gilt für `.tp` und `.nb` nicht.
+- **Nur echte Texte** beim Üben: Sätze und Absätze aus `corpus.ts` (keine Einzelbuchstaben-Drills, keine Wortlisten). Wörter einzeln nur im Spiel „Wort-Regen“.
+- Dateien: `TypingApp.tsx` (Rahmen, Start), `TextRun.tsx` (Eingabe-Engine: WPM, Genauigkeit, Hardcore/Blind/Zen, Zeitlimit, `onProgress`/`locked` fürs Rennspiel), `Lessons.tsx` + `layouts.ts` (10 Stufen; Tastaturbelegungen nur für die Anzeige), `Train.tsx` (Sprint, Zitate, Code, Wikipedia, Tagestext; Schwachstellen), `RaceGame.tsx` (Tipp-Grand-Prix: Kart-Tempo = Tipptempo, Gegner passen sich an), `Texts.tsx`, `Cards.tsx`, `Dictation.tsx`, `Stats.tsx`, `Settings.tsx`, `gen.ts`, `corpus.ts`, `data.ts`, `store.ts`, `sound.ts`.
 - Wikipedia-Zufall und Sprachausgabe sind in `Legal.tsx` (Datenschutz) erwähnt.
 
 ## Architektur

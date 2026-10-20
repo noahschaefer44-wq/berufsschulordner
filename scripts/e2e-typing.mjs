@@ -29,27 +29,47 @@ for (let i = 0; i < 5; i++) await page.getByText('Version').click();
 await page.waitForSelector('text=Tipptraining');
 ok(true, 'Tipptraining öffnet über Version-Tipp');
 
-await page.getByRole('button', { name: /Schreibschule/ }).first().click();
-await page.getByText('Grundreihe 1/5').click();
+const shot = (n) => process.env.E2E_SHOTS ? page.screenshot({ path: process.env.E2E_SHOTS + n + '.png' }) : null;
+await shot('home');
+await page.locator('.tp-side').getByRole('button', { name: /Schreibschule/ }).click();
+await page.getByText('Kurze Sätze').first().click();
 const target = await page.locator('.tp-text').innerText();
-await page.keyboard.type(target.replace(/↵/g, '\n').replace(/·/g, ' '), { delay: 5 });
+await page.keyboard.type(target.replace(/↵/g, '\n').replace(/·/g, ' '), { delay: 4 });
 await page.waitForSelector('.tp-result');
-ok(await page.locator('.tp-big').innerText().then((t) => /WPM/.test(t)), 'Lektion abgeschlossen mit Ergebnis');
-await page.screenshot({ path: process.env.E2E_SHOT ?? 'tp-result.png' });
+ok(await page.locator('.tp-big').innerText().then((t) => /WPM/.test(t)), 'Stufe abgeschlossen mit Ergebnis');
+await shot('result');
 
-for (const name of ['Training', 'Schwachstellen', 'Eigene Texte', 'Lernkarten', 'Arcade', 'Diktat', 'Statistik', 'Einstellungen']) {
-  await page.locator('.tp-nav').getByRole('button', { name: new RegExp(name) }).click();
+for (const name of ['Training', 'Spiele', 'Schwachstellen', 'Eigene Texte', 'Lernkarten', 'Diktat', 'Statistik', 'Einstellungen']) {
+  await page.locator('.tp-side').getByRole('button', { name: new RegExp(name) }).click();
   await page.waitForTimeout(300);
   ok(await page.locator('.tp-main h2').first().isVisible(), `Seite ${name}`);
+  if (name === 'Einstellungen') await shot('settings');
 }
-await page.locator('.tp-nav').getByRole('button', { name: /Training/ }).click();
+await page.locator('.tp-side').getByRole('button', { name: /Training/ }).click();
 await page.getByRole('button', { name: 'Los geht’s' }).click();
 await page.keyboard.type((await page.locator('.tp-text').innerText()).slice(0, 6), { delay: 10 });
 ok(await page.locator('.tp-text span.ok').count() > 0, 'Sprint nimmt Eingabe an');
-await page.locator('.tp-nav').getByRole('button', { name: /Arcade/ }).click();
-await page.getByRole('button', { name: 'Start', exact: true }).click();
+
+// Spiele: Rennen
+await page.locator('.tp-side').getByRole('button', { name: /Spiele/ }).click();
+await page.getByText('Tipp-Grand-Prix').click();
+await shot('race-setup');
+await page.getByRole('button', { name: 'Rennen starten' }).click();
+await page.waitForTimeout(4200);
+const rt = await page.locator('.wu-pad .tp-text').innerText();
+await page.keyboard.type(rt.slice(0, 40), { delay: 15 });
+await shot('race');
+await page.keyboard.type(rt.slice(40), { delay: 4 });
+await page.waitForSelector('.wu-result', { timeout: 15000 });
+ok(true, 'Rennen beendet, Ergebnis sichtbar');
+await shot('race-result');
+await page.getByRole('button', { name: 'Zum Menü' }).click();
+await page.getByRole('button', { name: '‹ Spiele' }).click();
+await page.getByText('Wort-Regen').click();
+await page.locator('.wu-go').click();
 await page.waitForTimeout(1500);
-ok(await page.locator('.tp-fall').count() > 0, 'Arcade: Wörter fallen');
+ok(await page.locator('.tp-fall').count() > 0, 'Wort-Regen: Wörter fallen');
+await shot('rain');
 
 ok(errors.length === 0, 'keine Skriptfehler ' + errors.join(' | '));
 await browser.close();

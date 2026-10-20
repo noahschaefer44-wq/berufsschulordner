@@ -22,6 +22,11 @@ export interface TextRunProps {
   onNext?: () => void;
   nextLabel?: string;
   extra?: ReactNode;
+  /** Eingabe gesperrt (z. B. Countdown im Rennspiel) */
+  locked?: boolean;
+  /** Ergebnisfenster nicht anzeigen (das Spiel zeigt sein eigenes) */
+  hideResult?: boolean;
+  onProgress?: (p: { idx: number; len: number; wpm: number; elapsed: number; errs: number; streak: number; running: boolean }) => void;
 }
 
 const minutes = (secs: number) => Math.max(secs, 0.5) / 60;
@@ -54,14 +59,14 @@ export default function TextRun(p: TextRunProps) {
   const [now, setNow] = useState(0);
   const [result, setResult] = useState<(RunResult & { stars: number; place?: number; fresh: boolean; badges: string[] }) | null>(null);
   const [note, setNote] = useState('');
-  const t = useRef({ typed: [] as string[], start: 0, keys: 0, good: 0, errs: 0, last: 0, series: [] as number[], done: false });
+  const t = useRef({ typed: [] as string[], start: 0, keys: 0, good: 0, errs: 0, last: 0, series: [] as number[], done: false, streak: 0 });
   const box = useRef<HTMLDivElement>(null);
   const cur = useRef<HTMLSpanElement>(null);
   const hidden = useRef<HTMLInputElement>(null);
 
   // Neustart bei neuem Text
   useEffect(() => {
-    t.current = { typed: [], start: 0, keys: 0, good: 0, errs: 0, last: 0, series: [], done: false };
+    t.current = { typed: [], start: 0, keys: 0, good: 0, errs: 0, last: 0, series: [], done: false, streak: 0 };
     setTyped([]); setResult(null); setNow(0); setNote('');
     hidden.current?.focus();
   }, [text]);
@@ -94,14 +99,14 @@ export default function TextRun(p: TextRunProps) {
 
   const press = useCallback((ch: string) => {
     const c = t.current;
-    if (c.done || c.typed.length >= text.length) return;
+    if (c.done || p.locked || c.typed.length >= text.length) return;
     const nowMs = performance.now();
     if (!c.start) c.start = nowMs;
     const idx = c.typed.length;
     const exp = text[idx];
     const ok = ch === exp;
     c.keys++;
-    if (ok) c.good++; else c.errs++;
+    if (ok) { c.good++; c.streak++; } else { c.errs++; c.streak = 0; }
     if (p.recordKeys !== false && exp !== '\n') {
       const dt = c.last ? nowMs - c.last : 0;
       addKeyStat('keys', exp.toLowerCase(), ok, dt);
@@ -110,7 +115,7 @@ export default function TextRun(p: TextRunProps) {
     c.last = nowMs;
     keySound(ok ? (ch === ' ' ? 'space' : ch === '\n' ? 'enter' : 'ok') : 'err');
     if (!ok && p.hardcore) {
-      t.current = { typed: [], start: 0, keys: 0, good: 0, errs: 0, last: 0, series: [], done: false };
+      t.current = { typed: [], start: 0, keys: 0, good: 0, errs: 0, last: 0, series: [], done: false, streak: 0 };
       setTyped([]); setNow(0); setNote('Fehler! Neustart …');
       return;
     }
@@ -119,7 +124,7 @@ export default function TextRun(p: TextRunProps) {
     c.typed = [...c.typed, ch];
     setTyped(c.typed);
     if (c.typed.length >= text.length) finish();
-  }, [finish, p.hardcore, p.recordKeys, s.stopOnError, text]);
+  }, [finish, p.hardcore, p.locked, p.recordKeys, s.stopOnError, text]);
 
   const back = useCallback(() => {
     const c = t.current;
@@ -135,7 +140,7 @@ export default function TextRun(p: TextRunProps) {
       if (e.key === 'Tab') { e.preventDefault(); p.onRestart(); return; }
       if (e.key === 'Escape') return;
       if (result) {
-        if (e.key === 'Enter') { e.preventDefault(); (p.onNext ?? p.onRestart)(); }
+        if (e.key === 'Enter' && !p.hideResult) { e.preventDefault(); (p.onNext ?? p.onRestart)(); }
         return;
       }
       if (e.key === 'Backspace') { e.preventDefault(); back(); return; }
@@ -172,9 +177,14 @@ export default function TextRun(p: TextRunProps) {
   }, [idx, text, s.size]);
 
   const running = t.current.start > 0;
+  const onProg = p.onProgress;
   const right = typed.reduce((a, ch, i) => a + (ch === text[i] ? 1 : 0), 0);
   const liveWpm = now > 1 ? Math.round(right / 5 / (now / 60)) : 0;
   const left = p.timeLimit ? Math.max(0, Math.ceil(p.timeLimit - now)) : null;
+  useEffect(() => {
+    onProg?.({ idx, len: text.length, wpm: liveWpm, elapsed: now, errs: t.current.errs, streak: t.current.streak, running });
+  }, [idx, now, liveWpm]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const nextCh = idx < text.length ? text[idx] : null;
   const pos = nextCh ? locate(layout, nextCh) : null;
 
@@ -233,7 +243,7 @@ export default function TextRun(p: TextRunProps) {
           {pos && pos.finger >= 0 && <div className="tp-fingerhint">{pos.shift ? 'Shift + ' : ''}{pos.altgr ? 'AltGr + ' : ''}{nextCh === '\n' ? 'Enter' : nextCh}: {FINGER_NAMES[pos.finger]}</div>}
         </div>
       )}
-      {result && (
+      {result && !p.hideResult && (
         <div className="tp-result" role="dialog" aria-label="Ergebnis">
           {s.confetti && (result.stars > 0 || (!p.goal && result.acc >= 95)) && <Confetti />}
           {p.goal && <div className="tp-stars" aria-label={`${result.stars} von 3 Sternen`}>{[1, 2, 3].map((n) => <span key={n} className={n <= result.stars ? 'on' : ''}>★</span>)}</div>}

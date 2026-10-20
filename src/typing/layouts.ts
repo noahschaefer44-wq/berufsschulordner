@@ -72,57 +72,31 @@ export function locate(layout: Layout, ch: string): KeyPos | null {
   return null;
 }
 
-// ───────── Schreibschule ─────────
+// ───────── Schreibschule: zehn Stufen mit echten Texten ─────────
 
-export type LessonKind = 'keys' | 'caps' | 'umlaut' | 'nums' | 'punct' | 'special' | 'sentences' | 'numpad';
 export interface TypingLesson {
   id: string;
   title: string;
   info: string;
-  kind: LessonKind;
-  /** zu übende Zeichen insgesamt / neu in dieser Lektion */
-  chars: string;
-  fresh: string;
+  /** Textsammlung (siehe corpus.ts) und Anzahl Texte pro Übung */
+  pool: string;
+  count: number;
   goalWpm: number;
   goalAcc: number;
 }
 
-const GROUPS = [[3, 6], [2, 7], [1, 8], [0, 9], [4, 5]];
-const ROWS = [
-  { key: 'home', name: 'Grundreihe', idx: 2, goal: 12 },
-  { key: 'top', name: 'obere Reihe', idx: 1, goal: 16 },
-  { key: 'bot', name: 'untere Reihe', idx: 3, goal: 20 },
-];
-
-export function buildLessons(layout: Layout): TypingLesson[] {
-  const out: TypingLesson[] = [];
-  let known = '';
-  for (const row of ROWS) {
-    const start = row.idx === 3 ? layout.botStart : 0;
-    const keys = layout.base[row.idx].slice(start, start + 10);
-    GROUPS.forEach((g, i) => {
-      const fresh = g.map((c) => keys[c]).filter(Boolean).join('');
-      known += fresh;
-      out.push({
-        id: `${row.key}-${i + 1}`,
-        title: `${row.name} ${i + 1}/5`,
-        info: `Neue Tasten: ${fresh.split('').join(' ')}. Finger: ${[...new Set(g.map((c) => FINGER_NAMES[FINGER_ROWS[row.idx][c] ?? 7]))].join(' und ')}.`,
-        kind: 'keys', chars: known, fresh, goalWpm: row.goal + i, goalAcc: 94,
-      });
-    });
-  }
-  const hasUml = 'äöüß'.split('').some((c) => locate(layout, c));
-  if (hasUml) {
-    out.push({ id: 'umlaute', title: 'Umlaute und ß', info: 'ä, ö, ü und ß – die häufigsten Sonderbuchstaben im Deutschen.', kind: 'umlaut', chars: 'äöüß', fresh: 'äöüß', goalWpm: 22, goalAcc: 94 });
-  }
-  out.push(
-    { id: 'gross', title: 'Großschreibung (Shift)', info: 'Shift mit dem kleinen Finger der Gegenseite halten, dann die Taste anschlagen.', kind: 'caps', chars: 'ABC', fresh: 'ABC', goalWpm: 24, goalAcc: 94 },
-    { id: 'zahlen-1', title: 'Zahlen 1–5', info: 'Zahlenreihe: Finger bleiben auf der Grundreihe, greifen nach oben und kehren zurück.', kind: 'nums', chars: '12345', fresh: '12345', goalWpm: 20, goalAcc: 94 },
-    { id: 'zahlen-2', title: 'Zahlen 6–0', info: 'Rechte Hand: 6 7 8 9 0. Dazu Ziffern gemischt.', kind: 'nums', chars: '1234567890', fresh: '67890', goalWpm: 22, goalAcc: 94 },
-    { id: 'satzzeichen', title: 'Satzzeichen', info: '. , ! ? : ; " ( ) – Zeichen, die jeder Text braucht.', kind: 'punct', chars: '.,!?:;"()', fresh: '.,!?:;"()', goalWpm: 24, goalAcc: 94 },
-    { id: 'sonderzeichen', title: 'Sonderzeichen', info: '@ € % & / = + # { } [ ] – für E-Mails, Preise und Code. Manche brauchen AltGr.', kind: 'special', chars: '@€%&/=+#{}[]', fresh: '@€%&/=+#{}[]', goalWpm: 22, goalAcc: 92 },
-    { id: 'saetze', title: 'Ganze Sätze', info: 'Alles zusammen: Groß- und Kleinschreibung, Satzzeichen, Zahlen.', kind: 'sentences', chars: '', fresh: '', goalWpm: 30, goalAcc: 95 },
-    { id: 'zahlenblock', title: 'Zahlenblock', info: 'Rechenaufgaben mit + − * / und =. Auch auf der normalen Zahlenreihe übbar.', kind: 'numpad', chars: '0123456789+-*/=', fresh: '+-*/=', goalWpm: 30, goalAcc: 96 },
-  );
-  return out;
+export function buildLessons(): TypingLesson[] {
+  const L = (id: string, title: string, info: string, pool: string, count: number, goalWpm: number, goalAcc = 94): TypingLesson => ({ id, title, info, pool, count, goalWpm, goalAcc });
+  return [
+    L('s1', 'Kurze Sätze', 'Einfache Sätze mit Punkt – finde deinen Rhythmus.', 'kurz', 4, 15),
+    L('s2', 'Längere Sätze', 'Kommas und Nebensätze, aber noch ohne Hast.', 'lang', 3, 20),
+    L('s3', 'Satzzeichen', 'Fragen, Ausrufe, Klammern und Anführungszeichen.', 'satz', 3, 22),
+    L('s4', 'Zahlen & Preise', 'Uhrzeiten, Daten, Beträge und Rechnungen.', 'zahlen', 3, 22),
+    L('s5', 'Umlaute & ß', 'Texte mit ä, ö, ü und ß – ohne Zögern.', 'umlaut', 3, 25),
+    L('s6', 'Sonderzeichen', 'E-Mail-Adressen, Prozent, Rechenzeichen und Pfade. Manche Zeichen brauchen AltGr.', 'sonder', 3, 22, 92),
+    L('s7', 'Absätze', 'Zusammenhängende Mini-Texte schreiben.', 'absatz', 2, 28),
+    L('s8', 'Beruf & Büro', 'Fachtexte aus Wirtschaft und Verwaltung.', 'fach', 3, 28),
+    L('s9', 'Englisch', 'Briefe und Alltagssätze auf Englisch.', 'englisch', 4, 30),
+    L('s10', 'Meisterstufe', 'Lange Absätze am Stück – Ausdauer und Genauigkeit.', 'meister', 2, 35, 96),
+  ];
 }

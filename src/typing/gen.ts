@@ -1,7 +1,8 @@
-// Erzeugt Übungstexte für alle Modi.
-import { QUOTES, SENTENCES_DE, SENTENCES_EN, SNIPPETS, WORDS_CODE, WORDS_DE, WORDS_EN, WORDS_FACH } from './data';
+// Erzeugt Übungstexte für alle Modi – immer zusammenhängende Sätze und Absätze.
+import { ALL_TEXTS, POOLS, poolById } from './corpus';
+import { QUOTES, SNIPPETS, WORDS_DE, WORDS_EN } from './data';
 import type { TypingLesson } from './layouts';
-import type { KeyStat, WordList } from './store';
+import type { KeyStat } from './store';
 
 export const rnd = (n: number) => Math.floor(Math.random() * n);
 export const pick = <T,>(a: T[]): T => a[rnd(a.length)];
@@ -10,110 +11,35 @@ export function shuffle<T>(a: T[]): T[] {
   for (let i = b.length - 1; i > 0; i--) { const j = rnd(i + 1); [b[i], b[j]] = [b[j], b[i]]; }
   return b;
 }
+/** Wortliste nur für das Arcade-Spiel (fallende Wörter). */
 export const pool = (lang: 'de' | 'en') => (lang === 'de' ? WORDS_DE : WORDS_EN);
-const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-/** n Wörter aus einer Liste, ohne direkte Wiederholung. */
-export function words(list: string[], n: number): string {
+/** Mischt Texte und hängt sie aneinander, bis mindestens `min` Zeichen erreicht sind. */
+export function joinTexts(texts: string[], min: number): string {
   const out: string[] = [];
-  let last = '';
-  while (out.length < n) {
-    const x = pick(list);
-    if (x !== last || list.length < 2) { out.push(x); last = x; }
+  let len = 0;
+  let order = shuffle(texts);
+  let i = 0;
+  while (len < min && out.length < 60) {
+    if (i >= order.length) { order = shuffle(texts); i = 0; }
+    out.push(order[i++]);
+    len += out[out.length - 1].length + 1;
   }
   return out.join(' ');
 }
 
-function drillGroup(chars: string, fresh: string): string {
-  const src = fresh && Math.random() < 0.65 ? fresh : chars;
-  const len = 2 + rnd(4);
-  let s = '';
-  for (let i = 0; i < len; i++) s += src[rnd(src.length)];
-  return s;
-}
-
-function numberText(n: number, extra = ''): string {
-  const out: string[] = [];
-  for (let i = 0; i < n; i++) {
-    const len = 2 + rnd(5);
-    let s = '';
-    for (let k = 0; k < len; k++) s += '0123456789'[rnd(10)];
-    out.push(extra && Math.random() < 0.25 ? s + extra[rnd(extra.length)] : s);
-  }
-  return out.join(' ');
-}
-
-function calcText(n: number): string {
-  const ops = ['+', '-', '*', '/'];
-  const out: string[] = [];
-  for (let i = 0; i < n; i++) {
-    const a = 1 + rnd(99), b = 1 + rnd(99), op = pick(ops);
-    const r = op === '+' ? a + b : op === '-' ? a - b : op === '*' ? a * b : Math.round((a / b) * 100) / 100;
-    out.push(`${a}${op}${b}=${String(r).replace('.', ',')}`);
-  }
-  return out.join(' ');
-}
-
-const SPECIAL = [
-  'max@mail.de', 'info@firma.com', '100 € / 50 %', 'a&b=c+d', '#tag', '{ name: "x" }', '[1, 2, 3]', 'preis=19,99€', 'x+y=z', 'user@web.net',
-  '50%', 'A&B', 'q@e.de', '(a+b)*c', 'size=[10]', '{a}{b}', '5€+3€=8€', '#1 & #2',
-];
-const PUNCT = [
-  '"Hallo!" (Wie geht\'s?)', 'Ja, nein; vielleicht: später.', 'Wirklich? Ja! Gut.', '(eins) (zwei) (drei)', '"Ja", sagte er; "nein", sagte sie.',
-  'Liste: Brot, Milch, Käse.', 'Achtung! Bitte warten...', '(siehe oben): gut, besser, am besten.',
-];
-
-export function lessonText(l: TypingLesson, lang: 'de' | 'en', size = 36): string {
-  switch (l.kind) {
-    case 'keys': {
-      const set = new Set(l.chars.split(''));
-      const real = [...WORDS_DE, ...WORDS_EN].filter((x) => x.length >= 2 && x === x.toLowerCase() && x.split('').every((c) => set.has(c)));
-      const withFresh = real.filter((x) => l.fresh.split('').some((c) => x.includes(c)));
-      const out: string[] = [];
-      let guard = 0;
-      while (out.length < size && guard++ < 500) {
-        const useReal = withFresh.length >= 4 && Math.random() < 0.55;
-        out.push(useReal ? pick(withFresh) : drillGroup(l.chars, l.fresh));
-      }
-      return out.join(' ');
-    }
-    case 'caps': return Array.from({ length: size / 2 }, () => cap(pick(WORDS_DE).toLowerCase())).join(' ');
-    case 'umlaut': {
-      const list = WORDS_DE.filter((x) => /[äöüßÄÖÜ]/.test(x));
-      return words(list, size / 2);
-    }
-    case 'nums': return numberText(size / 2);
-    case 'punct': return Array.from({ length: 8 }, () => pick(PUNCT)).join(' ');
-    case 'special': return Array.from({ length: 12 }, () => pick(SPECIAL)).join(' ');
-    case 'sentences': return shuffle(lang === 'de' ? SENTENCES_DE : SENTENCES_EN).slice(0, 4).join(' ');
-    case 'numpad': return calcText(12);
-  }
+export function lessonText(l: TypingLesson): string {
+  const texts = poolById(l.pool)?.texts ?? ALL_TEXTS;
+  return shuffle(texts).slice(0, l.count).join(' ');
 }
 
 export interface SourceOpt { id: string; name: string }
-export const SOURCES: SourceOpt[] = [
-  { id: 'woerter', name: 'Häufige Wörter' }, { id: 'gross', name: 'Wörter mit Großbuchstaben' }, { id: 'saetze', name: 'Sätze' },
-  { id: 'zitate', name: 'Zitate' }, { id: 'fach', name: 'Fachbegriffe (Beruf)' }, { id: 'zahlen', name: 'Zahlen & Rechnen' },
-  { id: 'satzzeichen', name: 'Satzzeichen & Sonderzeichen' }, { id: 'code', name: 'Code-Begriffe' }, { id: 'mix', name: 'Alles gemischt' },
-];
+export const SOURCES: SourceOpt[] = [...POOLS.map((p) => ({ id: p.id, name: p.name })), { id: 'zitate', name: 'Zitate' }, { id: 'mix', name: 'Alles gemischt' }];
 
-export function sourceText(src: string, lang: 'de' | 'en', n: number, lists: WordList[]): string {
-  if (src.startsWith('liste:')) {
-    const l = lists.find((x) => x.id === src.slice(6));
-    const ws = (l?.words ?? '').split(/\s+/).filter(Boolean);
-    if (ws.length) return words(ws, n);
-  }
-  switch (src) {
-    case 'gross': return Array.from({ length: n }, () => cap(pick(pool(lang)))).join(' ');
-    case 'saetze': return shuffle(lang === 'de' ? SENTENCES_DE : SENTENCES_EN).join(' ');
-    case 'zitate': return shuffle(QUOTES).map((q) => q.text).join(' ');
-    case 'fach': return words(WORDS_FACH, n);
-    case 'zahlen': return Math.random() < 0.6 ? numberText(n, ',.') : calcText(n / 2);
-    case 'satzzeichen': return shuffle([...PUNCT, ...SPECIAL]).join(' ');
-    case 'code': return words(WORDS_CODE, n);
-    case 'mix': return Array.from({ length: n }, () => (Math.random() < 0.15 ? numberText(1) : Math.random() < 0.15 ? cap(pick(pool(lang))) : pick(pool(lang)))).join(' ');
-    default: return words(pool(lang), n);
-  }
+export function sourceText(src: string, min: number): string {
+  if (src === 'zitate') return joinTexts(QUOTES.map((q) => q.text), min);
+  if (src === 'mix') return joinTexts(ALL_TEXTS, min);
+  return joinTexts(poolById(src)?.texts ?? ALL_TEXTS, min);
 }
 
 export function randomSnippet(lang?: string) {
@@ -121,7 +47,7 @@ export function randomSnippet(lang?: string) {
   return pick(list.length ? list : SNIPPETS);
 }
 
-/** Schwächste Tasten: hohe Fehlerquote und langsame Anschläge. */
+/** Schwächste Tasten: hohe Fehlerquote und langsame Anschläge (nur zur Analyse). */
 export function weakKeys(keys: Record<string, KeyStat>, count = 6): { ch: string; score: number; err: number; ms: number }[] {
   const rows = Object.entries(keys).filter(([k, s]) => k.length === 1 && k !== ' ' && s.n >= 4);
   if (!rows.length) return [];
@@ -138,19 +64,6 @@ export function weakKeys(keys: Record<string, KeyStat>, count = 6): { ch: string
     .slice(0, count);
 }
 
-export function weakText(keys: Record<string, KeyStat>, lang: 'de' | 'en', n = 40): { text: string; weak: string[] } {
-  const weak = weakKeys(keys).map((w) => w.ch);
-  if (!weak.length) return { text: words(pool(lang), n), weak: [] };
-  const all = [...WORDS_DE, ...WORDS_EN, ...WORDS_FACH];
-  const scored = all.map((x) => ({ x, s: weak.reduce((a, c) => a + (x.toLowerCase().split(c.toLowerCase()).length - 1), 0) })).filter((o) => o.s > 0);
-  const out: string[] = [];
-  for (let i = 0; i < n; i++) {
-    if (scored.length >= 5 && Math.random() < 0.8) out.push(pick(scored.sort(() => Math.random() - 0.5).slice(0, 25)).x);
-    else out.push(drillGroup(weak.join(''), weak.join('')));
-  }
-  return { text: out.join(' '), weak };
-}
-
 /** Tastenpaare (Bigramme) mit den meisten Fehlern. */
 export function weakPairs(pairs: Record<string, KeyStat>, count = 8) {
   return Object.entries(pairs)
@@ -160,12 +73,24 @@ export function weakPairs(pairs: Record<string, KeyStat>, count = 8) {
     .map(([k, s]) => ({ pair: k, rate: s.e / s.n }));
 }
 
-/** Tagestext: pro Datum immer derselbe, damit Bestzeiten vergleichbar sind. */
-export function dailyText(lang: 'de' | 'en'): string {
+/** Echte Texte, in denen deine schwächsten Buchstaben besonders oft vorkommen. */
+export function weakText(keys: Record<string, KeyStat>, min = 260): { text: string; weak: string[] } {
+  const weak = weakKeys(keys).map((w) => w.ch);
+  if (!weak.length) return { text: joinTexts(ALL_TEXTS, min), weak: [] };
+  const scored = ALL_TEXTS.map((t) => {
+    const low = t.toLowerCase();
+    const hits = weak.reduce((a, c) => a + (low.split(c).length - 1), 0);
+    return { t, s: hits / Math.sqrt(t.length) };
+  }).sort((a, b) => b.s - a.s);
+  const top = scored.slice(0, 14).map((x) => x.t);
+  return { text: joinTexts(top, min), weak };
+}
+
+/** Tagestext: pro Datum immer derselbe, damit Ergebnisse vergleichbar sind. */
+export function dailyText(): string {
   let seed = 0;
   for (const c of new Date().toLocaleDateString('sv-SE')) seed = (seed * 31 + c.charCodeAt(0)) >>> 0;
-  const list = lang === 'de' ? WORDS_DE : WORDS_EN;
   const out: string[] = [];
-  for (let i = 0; i < 40; i++) { seed = (seed * 1664525 + 1013904223) >>> 0; out.push(list[seed % list.length]); }
+  for (let i = 0; i < 4; i++) { seed = (seed * 1664525 + 1013904223) >>> 0; out.push(ALL_TEXTS[seed % ALL_TEXTS.length]); }
   return out.join(' ');
 }

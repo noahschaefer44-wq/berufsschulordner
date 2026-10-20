@@ -72,3 +72,11 @@ export function speak(text: string, lang: 'de' | 'en') {
   } catch { /* kein TTS */ }
 }
 export const canSpeak = () => typeof speechSynthesis !== 'undefined';
+
+/** Signalton fürs Rennspiel (Countdown, Start, Boost). */
+export function beep(freq: number, dur = 0.18, type: OscillatorType = 'triangle') {
+  const { sound, volume } = getData().settings;
+  if (sound === 'aus') return;
+  const c = ac();
+  if (c) tone(c, freq, dur, type, 0.2 * volume);
+}

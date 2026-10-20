@@ -1,30 +1,28 @@
 import { useMemo, useState } from 'react';
 import { lessonText } from './gen';
-import { buildLessons, layoutById, type TypingLesson } from './layouts';
-import Keyboard from './Keyboard';
+import { buildLessons, type TypingLesson } from './layouts';
 import TextRun from './TextRun';
 import { update, useData } from './store';
 
 export default function Lessons() {
   const d = useData();
-  const layout = layoutById(d.settings.layout);
-  const lessons = useMemo(() => buildLessons(layout), [layout]);
+  const lessons = useMemo(() => buildLessons(), []);
   const [open, setOpen] = useState<TypingLesson | null>(null);
   const [round, setRound] = useState(0);
-  const text = useMemo(() => (open ? lessonText(open, d.settings.lang) : ''), [open, round, d.settings.lang]); // eslint-disable-line react-hooks/exhaustive-deps
+  const text = useMemo(() => (open ? lessonText(open) : ''), [open, round]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (open) {
     const i = lessons.indexOf(open);
     const next = lessons[i + 1];
     return (
       <section>
-        <button className="tp-link" onClick={() => setOpen(null)}>‹ Alle Lektionen</button>
+        <button className="tp-link" onClick={() => setOpen(null)}>‹ Alle Stufen</button>
         <h2>{open.title}</h2>
         <p className="tp-sub">{open.info}</p>
         <TextRun
           key={open.id}
           text={text}
-          mode={`lektion:${open.id}`}
+          mode={`stufe:${open.id}`}
           goal={{ wpm: open.goalWpm, acc: open.goalAcc }}
           onFinish={(r, stars) => {
             if (stars > 0) update((x) => {
@@ -34,7 +32,7 @@ export default function Lessons() {
           }}
           onRestart={() => setRound((n) => n + 1)}
           onNext={next ? () => { setOpen(next); setRound((n) => n + 1); } : () => setOpen(null)}
-          nextLabel={next ? 'Nächste Lektion' : 'Fertig'}
+          nextLabel={next ? 'Nächste Stufe' : 'Fertig'}
         />
       </section>
     );
@@ -45,24 +43,20 @@ export default function Lessons() {
   return (
     <section>
       <h2>Schreibschule</h2>
-      <p className="tp-sub">Zehn-Finger-System Schritt für Schritt – {done} von {lessons.length} Lektionen geschafft. Belegung: {layout.name} (änderbar unter Einstellungen).</p>
+      <p className="tp-sub">Zehn Stufen mit echten Texten – von kurzen Sätzen bis zu langen Absätzen. {done} von {lessons.length} geschafft. Für ein Ziel brauchst du Tempo und Genauigkeit.</p>
       <div className="tp-lessons">
         {lessons.map((l, i) => {
           const r = d.lessons[l.id];
           return (
-            <button key={l.id} className={'tp-lesson' + (r ? ' done' : '') + (i === firstOpen ? ' next' : '')} onClick={() => { setOpen(l); setRound((n) => n + 1); }}>
-              <span className="tp-lesson-no">{i + 1}</span>
+            <button key={l.id} className={'tp-lesson glass' + (r ? ' done' : '') + (i === firstOpen ? ' next' : '')} onClick={() => { setOpen(l); setRound((n) => n + 1); }}>
+              <span className="tp-lesson-no">Stufe {i + 1}</span>
               <b>{l.title}</b>
-              <span className="tp-lesson-keys">{l.fresh ? l.fresh.split('').join(' ') : 'alle Tasten'}</span>
               <span className="tp-stars sm">{[1, 2, 3].map((n) => <span key={n} className={n <= (r?.stars ?? 0) ? 'on' : ''}>★</span>)}</span>
-              <small>{r ? `${r.wpm} WPM · ${r.acc} %` : `Ziel ${l.goalWpm} WPM`}</small>
+              <small>{r ? `${r.wpm} WPM · ${r.acc} %` : `Ziel: ${l.goalWpm} WPM`}</small>
             </button>
           );
         })}
       </div>
-      <h3>Tastatur &amp; Finger</h3>
-      <p className="tp-sub">Jede Farbe gehört zu einem Finger. Die Zeigefinger ruhen auf F und J (fühlbare Noppen).</p>
-      <Keyboard layout={layout} />
     </section>
   );
 }

@@ -8,7 +8,7 @@ interface W { id: number; t: string; x: number; y: number }
 interface G { words: W[]; target: number | null; pos: number; score: number; lives: number; level: number; combo: number; hit: number; next: number; spawn: number; over: boolean; shake: number; maxCombo: number }
 const fresh = (): G => ({ words: [], target: null, pos: 0, score: 0, lives: 5, level: 1, combo: 0, hit: 0, next: 0, spawn: 0.5, over: false, shake: 0, maxCombo: 0 });
 
-export default function Arcade() {
+export default function Arcade({ onExit }: { onExit: () => void }) {
   const d = useData();
   const [phase, setPhase] = useState<'start' | 'play' | 'over'>('start');
   const [, tick] = useState(0);
@@ -92,28 +92,28 @@ export default function Arcade() {
   const s = g.current;
   if (phase === 'start') {
     return (
-      <section>
-        <h2>Arcade: Fallende Wörter</h2>
-        <p className="tp-sub">Wörter fallen herunter. Tippe sie ab, bevor sie unten ankommen. Fünf Leben, es wird immer schneller. Mit Backspace lässt du ein Wort wieder los.</p>
+      <div className="wu-screen"><button className="wu-back" onClick={onExit}>‹ Spiele</button>
+        <h2 className="wu-title">Wort-Regen</h2>
+        <p className="wu-sub">Wörter fallen herunter. Tippe sie ab, bevor sie unten ankommen. Fünf Leben, es wird immer schneller. Mit Backspace lässt du ein Wort wieder los. Je länger deine Serie, desto mehr Punkte.</p>
         <label className="tp-check"><input type="checkbox" checked={fach} onChange={(e) => setFach(e.target.checked)} />Nur Fachbegriffe (Beruf)</label>
         <p>Bestwert: <b>{d.arcade}</b></p>
-        <button className="tp-btn main" onClick={() => { g.current = fresh(); setPhase('play'); }}>Start</button>
-      </section>
+        <button className="wu-go" onClick={() => { g.current = fresh(); setPhase('play'); }}>Start</button>
+      </div>
     );
   }
   if (phase === 'over') {
     return (
-      <section>
-        <h2>Game Over</h2>
-        <div className="tp-big">{s.score} Punkte</div>
+      <div className="wu-screen"><button className="wu-back" onClick={onExit}>‹ Spiele</button>
+        <h2 className="wu-title">Game Over</h2>
+        <div className="wu-big">{s.score} Punkte</div>
         <p>Level {s.level} · {s.hit} Wörter · längste Serie {s.maxCombo} {s.score >= best.current && s.score > 0 ? '· Neuer Bestwert!' : `· Bestwert ${best.current}`}</p>
-        <button className="tp-btn main" onClick={() => { g.current = fresh(); setPhase('play'); }}>Nochmal</button>
-        <button className="tp-btn" onClick={() => setPhase('start')}>Menü</button>
-      </section>
+        <button className="wu-go" onClick={() => { g.current = fresh(); setPhase('play'); }}>Nochmal</button>
+        <button className="wu-ghost" onClick={() => setPhase('start')}>Menü</button>
+      </div>
     );
   }
   return (
-    <section>
+    <div className="wu-screen"><button className="wu-back" onClick={onExit}>‹ Spiele</button>
       <div className="tp-hud">
         <b>{s.score}</b><span>Level {s.level}</span><span>{'♥'.repeat(Math.max(0, s.lives))}</span>
         {s.combo > 2 && <em>x{(1 + Math.min(s.combo, 20) / 10).toFixed(1)}</em>}
@@ -126,6 +126,6 @@ export default function Arcade() {
         ))}
         <div className="tp-floor" />
       </div>
-    </section>
+    </div>
   );
 }
