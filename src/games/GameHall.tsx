@@ -15,6 +15,7 @@ const LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> 
   sudoku: () => import('./sudoku/SudokuGame'),
   bild: () => import('./bild/BildGame'),
   lager: () => import('./lager/LagerGame'),
+  block: () => import('./block/BlockGame'),
 };
 const LAZY: Record<string, ComponentType<GameProps>> = Object.fromEntries(Object.entries(LOADERS).map(([k, f]) => [k, lazy(f)]));
 

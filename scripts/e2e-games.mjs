@@ -146,6 +146,38 @@ games.lager = async () => {
   await shot('lager-editor');
   ok((await page.locator('.lg-note').count()) > 0, 'Lagerhaus: Editor prüft');
 };
+games.block = async () => {
+  await page.locator('.gh-box[data-game="block"]').click();
+  await page.waitForSelector('.bk-modes');
+  await page.locator('.bk-mode', { hasText: 'Sprint' }).click();
+  await page.waitForSelector('.bk-board');
+  await page.waitForTimeout(3000);
+  for (let i = 0; i < 6; i++) { await page.keyboard.press('ArrowLeft'); await page.keyboard.press('Space'); await page.waitForTimeout(40); }
+  await shot('block');
+  const pps = await page.locator('.bk-stats').innerText();
+  ok(pps.includes("Steine"), 'Blockfall: Sprint läuft');
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Beenden' }).first().click();
+  await page.locator('.bk-mode', { hasText: 'Duell' }).click();
+  await page.waitForSelector('.bk-opp');
+  await page.waitForTimeout(3500);
+  for (let i = 0; i < 3; i++) { await page.keyboard.press('Space'); await page.waitForTimeout(60); }
+  await shot('block-duell');
+  ok(true, 'Blockfall: Duell läuft');
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Beenden' }).first().click();
+  await page.getByRole('button', { name: 'Rätsel' }).click();
+  await page.locator('.bk-mode').first().click();
+  await page.waitForSelector('.bk-board');
+  await page.waitForTimeout(3000);
+  await shot('block-puzzle');
+  ok(true, 'Blockfall: Rätsel');
+  await page.keyboard.press('Escape');
+  await page.getByRole('button', { name: 'Beenden' }).first().click();
+  await page.getByRole('button', { name: 'Einstellungen' }).click();
+  await page.waitForSelector('.bk-settings');
+  ok(true, 'Blockfall: Einstellungen');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${e.message.split('\n')[0]}`); }
