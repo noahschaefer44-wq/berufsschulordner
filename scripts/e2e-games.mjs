@@ -87,6 +87,35 @@ games.sudoku = async () => {
   await page.getByRole('button', { name: 'Prüfen' }).click();
   ok(true, 'Sudoku: Editor');
 };
+games.bild = async () => {
+  await page.locator('.gh-box[data-game="bild"]').click();
+  await page.waitForSelector('.bd-menu');
+  await page.getByRole('tab', { name: 'Zufall' }).click();
+  await page.getByRole('button', { name: '10×10' }).click();
+  await page.getByRole('button', { name: 'Würfeln' }).click();
+  await page.waitForSelector('.bd-canvas');
+  const cv = page.locator('.bd-canvas');
+  const b = await cv.boundingBox();
+  await page.mouse.click(b.x + b.width - 40, b.y + b.height - 40);
+  await page.getByRole('button', { name: /Hinweis/ }).click();
+  await page.waitForTimeout(300);
+  await shot('bild');
+  ok((await page.locator('.bd-hint').count()) > 0, 'Bildrätsel: Hinweis');
+  await page.getByRole('button', { name: 'Lösungsweg' }).click();
+  await page.waitForSelector('.bd-hint');
+  await page.getByRole('button', { name: 'Automatisch' }).click();
+  await page.waitForTimeout(1200);
+  await shot('bild-logik');
+  ok(true, 'Bildrätsel: Lösungsweg');
+  await page.getByRole('button', { name: 'Zeichnen' }).click();
+  await page.waitForSelector('.bd-editor');
+  const eb = await page.locator('.bd-canvas').boundingBox();
+  await page.mouse.move(eb.x + 40, eb.y + 40); await page.mouse.down(); await page.mouse.move(eb.x + 200, eb.y + 40); await page.mouse.up();
+  await page.mouse.move(eb.x + 40, eb.y + 100); await page.mouse.down(); await page.mouse.move(eb.x + 160, eb.y + 160); await page.mouse.up();
+  await page.getByRole('button', { name: 'Prüfen' }).click();
+  await shot('bild-editor');
+  ok((await page.locator('.bd-hint').count()) > 0, 'Bildrätsel: Editor prüft');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${e.message.split('\n')[0]}`); }
