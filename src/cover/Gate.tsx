@@ -2,15 +2,17 @@ import { Suspense, lazy, useEffect, useRef, useState, type ReactNode } from 'rea
 import Cover from './Cover';
 
 const TypingApp = lazy(() => import('../typing/TypingApp'));
+const GameHall = lazy(() => import('../games/GameHall'));
 
 /**
  * Zeigt zuerst die Tarn-Ansicht (Notizen). Zwei geheime Wege hinaus:
  *  – Einstellungen → „Ton“ ausschalten öffnet Chessty,
- *  – Einstellungen → fünfmal schnell auf „Version“ tippen öffnet das Tipptraining.
+ *  – Einstellungen → fünfmal schnell auf „Version“ tippen öffnet das Tipptraining,
+ *  – Einstellungen → dreimal schnell auf „Speicher“ tippen öffnet die Spielhalle.
  * Die Freischaltung lebt nur im Arbeitsspeicher: Nach jedem Neuladen (oder zweimal Esc / „Zu den Ordnern“) erscheint wieder die Notizen-Ansicht.
  */
 export default function Gate({ children }: { children: ReactNode }) {
-  const [mode, setMode] = useState<'cover' | 'chess' | 'type'>('cover');
+  const [mode, setMode] = useState<'cover' | 'chess' | 'type' | 'games'>('cover');
   const lastEsc = useRef(0);
   useEffect(() => {
     const lock = () => setMode('cover');
@@ -28,6 +30,7 @@ export default function Gate({ children }: { children: ReactNode }) {
     };
   }, []);
   if (mode === 'chess') return <>{children}</>;
+  if (mode === 'games') return <Suspense fallback={null}><GameHall /></Suspense>;
   if (mode === 'type') return <Suspense fallback={null}><TypingApp /></Suspense>;
-  return <Cover onUnlock={() => setMode('chess')} onUnlockType={() => setMode('type')} />;
+  return <Cover onUnlock={() => setMode('chess')} onUnlockType={() => setMode('type')} onUnlockGames={() => setMode('games')} />;
 }

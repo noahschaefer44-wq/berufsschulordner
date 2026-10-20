@@ -55,7 +55,7 @@
 
 * { box-sizing: border-box; }
 /* Schach-Design: nie runde Ecken – außer in Notizen-Ansicht (.nb) und Tipptraining (.tp), die einen eigenen Look haben */
-*:not(.tp, .tp *, .nb, .nb *) { border-radius: 0 !important; }
+*:not(.tp, .tp *, .nb, .nb *, .gh, .gh *) { border-radius: 0 !important; }
 html, body { margin: 0; background: var(--bg); color: var(--fg); }
 body {
   font-family: var(--sans);

@@ -7,7 +7,7 @@ import './cover.css';
  * Chessty öffnet sich erst, wenn in den Einstellungen „Ton“ ausgeschaltet wird.
  * Das Tipptraining öffnet sich, wenn man in den Einstellungen fünfmal schnell auf „Version“ tippt.
  */
-export default function Cover({ onUnlock, onUnlockType }: { onUnlock: () => void; onUnlockType: () => void }) {
+export default function Cover({ onUnlock, onUnlockType, onUnlockGames }: { onUnlock: () => void; onUnlockType: () => void; onUnlockGames: () => void }) {
   const [st, setSt] = useState<NState>(loadNotes);
   const [folderId, setFolderId] = useState<string | null>(null);
   const [bookId, setBookId] = useState<string | null>(null);
@@ -21,6 +21,7 @@ export default function Cover({ onUnlock, onUnlockType }: { onUnlock: () => void
   const [query, setQuery] = useState('');
   const [searching, setSearching] = useState(false);
   const taps = useRef({ n: 0, t: 0 });
+  const storeTaps = useRef({ n: 0, t: 0 });
   const area = useRef<HTMLTextAreaElement>(null);
 
   const folder = st.folders.find((f) => f.id === folderId) ?? null;
@@ -43,6 +44,14 @@ export default function Cover({ onUnlock, onUnlockType }: { onUnlock: () => void
     t.n = now - t.t < 1500 ? t.n + 1 : 1;
     t.t = now;
     if (t.n >= 5) { t.n = 0; setSettings(false); setTimeout(onUnlockType, 120); }
+  }
+
+  function tapStorage() {
+    const now = Date.now();
+    const t = storeTaps.current;
+    t.n = now - t.t < 1200 ? t.n + 1 : 1;
+    t.t = now;
+    if (t.n >= 3) { t.n = 0; setSettings(false); setTimeout(onUnlockGames, 120); }
   }
 
   function newFolder() {
@@ -246,7 +255,7 @@ export default function Cover({ onUnlock, onUnlockType }: { onUnlock: () => void
             <div className="nb-group-title">Info</div>
             <div className="nb-group">
               <button className="nb-row" onClick={tapVersion}><span>Version</span><small>6.4.2</small></button>
-              <div className="nb-row"><span>Speicher</span><small>1,3 GB von 5 GB</small></div>
+              <button className="nb-row" onClick={tapStorage}><span>Speicher</span><small>1,3 GB von 5 GB</small></button>
             </div>
           </div>
         </div>

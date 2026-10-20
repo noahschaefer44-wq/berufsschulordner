@@ -1,0 +1,67 @@
+/* Spielhalle – Regal im Walnuss-Ton; die Spiele selbst bringen ihr eigenes Design mit */
+.gh { position: fixed; inset: 0; z-index: 1000; overflow-y: auto; color: #f2e8d5; font-family: 'DM Sans', system-ui, sans-serif; line-height: 1.45; -webkit-font-smoothing: antialiased;
+  background:
+    radial-gradient(120% 80% at 50% -10%, rgba(255, 196, 110, .16), transparent 60%),
+    repeating-linear-gradient(92deg, rgba(0, 0, 0, .06) 0 2px, transparent 2px 9px),
+    linear-gradient(180deg, #2a1f16, #1a130d 70%); }
+.gh *, .gh *::before, .gh *::after { box-sizing: border-box; }
+.gh button { font: inherit; color: inherit; cursor: pointer; }
+.gh.gh-playing { background: #101010; overflow: auto; }
+.gh-loading { display: grid; place-items: center; min-height: 60vh; color: #bba98a; }
+.gh-top { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 26px 28px 8px; max-width: 1180px; margin: 0 auto; }
+.gh-top h1 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; font-size: 44px; line-height: 1; margin: 0; letter-spacing: .01em; color: #f6ecd6; }
+.gh-top p { margin: 6px 0 0; color: #bba98a; font-size: 14px; }
+.gh-tabs { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+.gh-tabs button { background: none; border: 0; padding: 8px 14px; border-radius: 999px; color: #cdbb9a; font-size: 14px; }
+.gh-tabs button:hover { background: rgba(255, 255, 255, .07); }
+.gh-tabs button.on { background: #e8b95c; color: #2a1d0a; font-weight: 700; }
+.gh-tabs .gh-exit { margin-left: 8px; color: #8e7e63; font-size: 13px; text-decoration: underline; text-underline-offset: 3px; }
+.gh-main { max-width: 1180px; margin: 0 auto; padding: 14px 28px 90px; }
+.gh-daily { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 14px 18px; border-radius: 14px; background: rgba(0, 0, 0, .28); border: 1px solid rgba(255, 220, 160, .14); margin-bottom: 26px; }
+.gh-daily > div:first-child { display: grid; }
+.gh-daily b { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 20px; }
+.gh-daily span { color: #bba98a; font-size: 13px; }
+.gh-daily-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.gh-daily-btns button { border: 1px solid #e8b95c; background: none; color: #f0d9a8; padding: 7px 16px; border-radius: 8px; font-size: 14px; }
+.gh-daily-btns button:hover { background: rgba(232, 185, 92, .15); }
+.gh-daily-btns button.done { background: #e8b95c; color: #2a1d0a; font-weight: 700; }
+
+.gh-shelf { display: grid; grid-template-columns: repeat(auto-fill, minmax(196px, 1fr)); gap: 40px 26px; }
+.gh-box { display: grid; gap: 0; text-align: left; background: none; border: 0; padding: 0; transition: transform .25s cubic-bezier(.2, .9, .3, 1.2); transform-origin: 50% 100%; }
+.gh-box:hover { transform: translateY(-8px) rotate(-1.2deg); }
+.gh-box:active { transform: translateY(-2px) scale(.98); }
+.gh-box:focus-visible { outline: 3px solid #e8b95c; outline-offset: 4px; }
+.gh-cover { display: block; aspect-ratio: 3 / 4; border-radius: 4px 4px 0 0; overflow: hidden; box-shadow: 0 14px 22px rgba(0, 0, 0, .55), 0 0 0 1px rgba(0, 0, 0, .55); position: relative; }
+.gh-cover::after { content: ''; position: absolute; inset: 0; background: linear-gradient(105deg, rgba(255, 255, 255, .18) 0, transparent 22%, transparent 70%, rgba(0, 0, 0, .22) 100%); pointer-events: none; }
+.gh-art { width: 100%; height: 100%; display: block; }
+.gh-label { display: grid; gap: 1px; padding: 9px 11px 11px; background: linear-gradient(180deg, #4a3624, #3a2a1b); border-radius: 0 0 4px 4px; box-shadow: 0 8px 0 #1c140d, 0 14px 14px rgba(0, 0, 0, .5); }
+.gh-label b { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 19px; color: #f6ecd6; }
+.gh-label small { color: #cdbb9a; font-size: 12.5px; line-height: 1.35; }
+.gh-label em { font-style: normal; color: #e8b95c; font-size: 11.5px; margin-top: 3px; }
+.gh-box.soon .gh-cover { filter: grayscale(.8) brightness(.7); }
+
+.gh-list h2 { font-family: 'DM Serif Display', serif; font-weight: 400; font-size: 26px; margin: 22px 0 8px; }
+.gh-ach { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 10px; }
+.gh-ach > div { display: grid; gap: 2px; padding: 10px 14px; border-radius: 10px; background: rgba(0, 0, 0, .25); border: 1px solid rgba(255, 220, 160, .08); opacity: .55; }
+.gh-ach > div.on { opacity: 1; border-color: #e8b95c; }
+.gh-ach small { color: #bba98a; }
+.gh-ach em { font-style: normal; color: #e8b95c; font-size: 11.5px; }
+.gh-note { color: #bba98a; max-width: 70ch; }
+.gh-secret { margin: 10px 0; padding: 12px 16px; border-radius: 10px; background: rgba(0, 0, 0, .25); border: 1px dashed rgba(255, 220, 160, .25); max-width: 760px; }
+.gh-secret.on { border-style: solid; border-color: #e8b95c; }
+.gh-secret p { margin: 4px 0; color: #d6c6a6; }
+.gh-secret small { color: #8e7e63; font-weight: 400; margin-left: 6px; }
+.gh-secret code { background: #0d0a07; padding: 2px 10px; border-radius: 6px; color: #e8b95c; font-size: 14px; }
+.gh-opts { display: grid; gap: 10px; max-width: 520px; }
+.gh-opts label { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-radius: 10px; background: rgba(0, 0, 0, .25); }
+.gh-opts input[type='checkbox'] { width: 22px; height: 22px; accent-color: #e8b95c; }
+.gh-opts input[type='range'] { accent-color: #e8b95c; }
+.gh-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+.gh-actions button, .gh-file { padding: 9px 16px; border-radius: 8px; border: 1px solid #e8b95c; background: none; color: #f0d9a8; font-size: 14px; display: inline-block; }
+.gh-actions .danger { border-color: #c4564a; color: #f0a79d; }
+.gh-file input { display: none; }
+.gh-toasts { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); display: grid; gap: 6px; z-index: 50; pointer-events: none; }
+.gh-toasts > div { background: #f6ecd6; color: #2a1d0a; padding: 9px 18px; border-radius: 999px; font-size: 14px; font-weight: 700; box-shadow: 0 8px 24px rgba(0, 0, 0, .45); animation: gh-pop .3s cubic-bezier(.2, .9, .3, 1.3); }
+@keyframes gh-pop { from { opacity: 0; transform: translateY(12px) scale(.94); } }
+@media (max-width: 640px) { .gh-top { padding: 18px 16px 4px; } .gh-top h1 { font-size: 34px; } .gh-main { padding: 10px 16px 80px; } .gh-shelf { grid-template-columns: repeat(2, 1fr); gap: 28px 14px; } .gh-label small { display: none; } }
+@media (prefers-reduced-motion: reduce) { .gh-box, .gh-box:hover { transition: none; transform: none; } }
