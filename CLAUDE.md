@@ -30,8 +30,14 @@ npx tsx scripts/accuracy-check.ts   # Genauigkeitsformel gegen echte Lichess-Par
 CI (`.github/workflows/ci.yml`) führt Typecheck, Build, Glossar- und Inhaltsprüfung aus. Vor jedem Push mindestens `npm run build` laufen lassen; bei Inhaltsänderungen zusätzlich `npm run validate -- <id>`.
 
 ## Tarn-Startseite (Wunsch des Eigentümers)
-- Beim Öffnen erscheint immer zuerst `src/cover/Cover.tsx` (Ordner-Ansicht im Stil einer Notizen-App, App-Name „Berufsschulordner“, Ordner-Icon). Erst Einstellungen → „Ton“ ausschalten öffnet Chessty (`src/cover/Gate.tsx`). Nichts wird gespeichert: Neuladen, zweimal Esc oder „Mehr → Zu den Ordnern“ zeigt wieder die Ordner.
-- Browser-Tests müssen erst entsperren (siehe `scripts/e2e-smoke.mjs`).
+- Beim Öffnen erscheint immer zuerst `src/cover/Cover.tsx` (Ordner-Ansicht im Stil einer Notizen-App, App-Name „Berufsschulordner“, Ordner-Icon). Es sind **echte, lokal gespeicherte Notizen** (`src/cover/store.ts`, Schlüssel `nb.v1`): Ordner und Hefte anlegen, umbenennen, löschen, Text bearbeiten, suchen, sortieren, Papierstil. Startdaten stehen in `src/cover/notes.ts`.
+- Zwei geheime Zugänge (`src/cover/Gate.tsx`): Einstellungen → „Ton“ ausschalten öffnet Chessty; Einstellungen → **fünfmal schnell auf „Version“ tippen** öffnet das Tipptraining. Die Freischaltung lebt nur im Arbeitsspeicher: Neuladen, zweimal Esc oder „Zu den Ordnern“ zeigt wieder die Notizen.
+- Browser-Tests müssen erst entsperren (siehe `scripts/e2e-smoke.mjs`; Tipptraining: `scripts/e2e-typing.mjs`).
+
+## Tipptraining (`src/typing/`, unabhängig von Chessty)
+- Eigene App mit eigenem Design (Themes über CSS-Variablen `--tp-*`, nicht das Chessty-Schwarz/Weiß), lazy geladen aus dem Gate, Speicher `tp.v1` (localStorage, kein Server). Export/Import als JSON unter Einstellungen.
+- Dateien: `TypingApp.tsx` (Rahmen + Start), `TextRun.tsx` (Eingabe-Engine: WPM, Genauigkeit, Hardcore/Blind/Zen, Zeitlimit, Rennen), `Lessons.tsx` + `layouts.ts` (Schreibschule je Tastaturbelegung), `Train.tsx` (Sprint, Rennen, Zitate, Code, Wikipedia, Tagestext; Schwachstellen), `Texts.tsx`, `Cards.tsx` (Leitner-Karteikasten), `Arcade.tsx`, `Dictation.tsx`, `Stats.tsx`, `Settings.tsx`, `gen.ts` (Textgenerator), `data.ts` (Wortlisten, Sätze, Zitate, Code), `store.ts` (Daten, Abzeichen, XP), `sound.ts` (WebAudio, Sprachausgabe).
+- Wikipedia-Zufall und Sprachausgabe sind in `Legal.tsx` (Datenschutz) erwähnt.
 
 ## Architektur
 - **Stack**: Vite 8, React 19, TypeScript 7, `vite-plugin-pwa` (registerType `prompt` → Update-Hinweis), Hash-Routing (`src/lib/router.ts`, `#/pfad/arg`), Seiten per `React.lazy` in `src/App.tsx` (`page()`-Switch + `NAV`/`MORE`-Menüs).

@@ -146,6 +146,14 @@ function Privacy() {
             <b>Browser-KI</b> im Varianten-Assistenten: Nur falls dein Browser eine eingebaute KI anbietet (z. B. Chrome), läuft sie lokal auf deinem Gerät.
             Chessty sendet deinen Text an keinen Server.
           </li>
+          <li>
+            <b>Tipptraining – Wikipedia-Zufall</b>: Wählst du im Training „Wikipedia“, ruft dein Browser einen zufälligen Artikelanfang von
+            de.wikipedia.org bzw. en.wikipedia.org ab (Wikimedia Foundation, USA). Dabei erhält Wikimedia deine IP-Adresse. Ohne diese Funktion findet keine Verbindung statt.
+          </li>
+          <li>
+            <b>Tipptraining – Diktat</b>: Die Vorlesefunktion nutzt die Sprachausgabe deines Browsers bzw. Betriebssystems; Chessty sendet dafür nichts an einen Server.
+            Notizen, Tipp-Statistiken, Lernkarten und eigene Texte liegen nur im lokalen Speicher deines Browsers.
+          </li>
         </ul>
       </S>
       <S h="7. Kinder und Jugendliche">
