@@ -73,6 +73,13 @@ CI (`.github/workflows/ci.yml`) führt Typecheck, Build, Glossar- und Inhaltspr�
 - Online-Partien: Realtime-Broadcast mit 6-s-Timeout, sonst Polling über `chessty_game_send/poll` (Nachrichten werden nach 2 Tagen gelöscht).
 - Achtung: In derselben Datenbank existiert eine fremde Migration `kraftteller_schema` (nicht von Chessty). Nicht anfassen, Eigentümer fragen.
 
+## Spielhalle (versteckt, `src/games/`)
+- Zugang: Einstellungen → dreimal schnell auf die Zeile „Speicher“ tippen (`Cover.tsx` → `Gate` Modus `games`). Nicht mit Schach/Tipptraining mischen; eigener Speicher `gh.v1` (`shared/store.ts`), Daten je Spiel in `games[id]`.
+- Sieben Spiele, lazy über `LOADERS` in `GameHall.tsx`: Minenfeld (`minen`), Rätselheft/Sudoku (`sudoku`), Bildrätsel/Nonogramm (`bild`), Lagerhaus/Sokoban (`lager`), Blockfall (`block`), Patience (`karten`), Go (`go`). Neues Spiel: Ordner, Eintrag in `shared/meta.ts` (GAMES), `LOADERS`, `COVERS` (`Covers.tsx`); Erfolge/Geheimnisse per `addAchievements`/`addSecrets` in der `data.ts` des Spiels.
+- Jedes Spiel hat ein eigenes Design (Win98, Zeitung, Mondrian, Warnstreifen, Neon-Terminal, Spielfilz, Washi/Sumi) – die Schach-Designregeln (schwarz/weiß, eckig) gelten hier **nicht**. Die Klasse `.gh` ist in `global.css` von der Eckenregel ausgenommen.
+- Geheimwörter (`useSecrets`) und Konami-Code (Halle) schalten Hilfen/Entwicklermenü frei; Hilfen zählen nicht für Erfolge.
+- Reine Logik ist getestet (`tests/minen|sudoku|bild|lager|block|karten|go*.test.ts`); schwere Erzeugung/KI läuft in Web Workern mit Sync-Fallback. E2E: `scripts/e2e-games.mjs` (`E2E_ONLY=go`, `E2E_CHANNEL=msedge`).
+
 ## Deploy
 - Git-Branch: **`chessty-app`** (Remote `noahschaefer44-wq/berufsschulordner`, öffentlich wegen GPL, Standard-Branch). Push: `git push -u origin chessty-app`.
 - **Live über GitHub Pages**: https://noahschaefer44-wq.github.io/berufsschulordner/ – jeder Push auf `chessty-app` baut und veröffentlicht automatisch (`.github/workflows/pages.yml`). Netlify war wegen aufgebrauchter Konto-Credits gesperrt.

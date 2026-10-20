@@ -17,11 +17,12 @@ const LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> 
   lager: () => import('./lager/LagerGame'),
   block: () => import('./block/BlockGame'),
   karten: () => import('./karten/KartenGame'),
+  go: () => import('./go/GoGame'),
 };
 const LAZY: Record<string, ComponentType<GameProps>> = Object.fromEntries(Object.entries(LOADERS).map(([k, f]) => [k, lazy(f)]));
 
 const COVERS: Record<string, () => React.ReactElement> = { minen: MinenCover, sudoku: SudokuCover, bild: BildCover, lager: LagerCover, block: BlockCover, karten: KartenCover, go: GoCover };
-const DAILY = ['minen', 'sudoku', 'bild', 'lager'];
+const DAILY = ['minen', 'sudoku', 'bild', 'lager', 'go'];
 const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
 type View = 'regal' | 'erfolge' | 'geheimnisse' | 'optionen';

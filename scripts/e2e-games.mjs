@@ -197,6 +197,62 @@ games.karten = async () => {
   await page.waitForTimeout(1500);
   ok(true, 'Patience: Hinweis und Ziehen');
 };
+games.go = async () => {
+  await page.locator('.gh-box[data-game="go"]').click();
+  await page.waitForSelector('.go-setup');
+  await shot('go-menu');
+  // 9x9 gegen Anfänger-KI
+  await page.locator('.go-seg button', { hasText: /^9$/ }).first().click();
+  await page.locator('.go-seg button[title="Anfänger"]').click();
+  await page.getByRole('button', { name: 'Partie beginnen' }).click();
+  await page.waitForSelector('.go-svg');
+  const box = await page.locator('.go-boardwrap .go-svg').boundingBox();
+  const at = (x, y) => [box.x + box.width * ((34 + x * 40) / (8 * 40 + 68)), box.y + box.height * ((34 + y * 40) / (8 * 40 + 68))];
+  let [px, py] = at(4, 4);
+  await page.mouse.click(px, py);
+  await page.waitForTimeout(1500);
+  const stones = await page.locator('.go-svg circle[fill^="url"]').count();
+  ok(stones >= 2, 'Go: Zug und KI-Antwort (' + stones + ' Steine)');
+  [px, py] = at(2, 6);
+  await page.mouse.click(px, py);
+  await page.waitForTimeout(1500);
+  await shot('go-play');
+  await page.getByRole('button', { name: /Schätzung/ }).click();
+  await page.waitForSelector('.go-wr', { timeout: 15000 });
+  await shot('go-estimate');
+  ok(true, 'Go: Schätzung');
+  await page.getByRole('button', { name: /^Passen/ }).click();
+  await page.waitForTimeout(1500);
+  await page.getByRole('button', { name: 'Aufgeben' }).click();
+  await page.waitForSelector('.go-over');
+  ok(true, 'Go: Aufgeben beendet Partie');
+  await page.getByRole('button', { name: 'Menü' }).last().click();
+  // Kurze Partie bis zum Zählen
+  await page.locator('.go-seg button', { hasText: /^5$/ }).first().click();
+  await page.getByRole('button', { name: 'Partie beginnen' }).click();
+  await page.waitForSelector('.go-svg');
+  for (let i = 0; i < 40 && !(await page.locator('.go-score').count()); i++) {
+    await page.getByRole('button', { name: /^Passen/ }).click({ timeout: 8000 }).catch(() => {});
+    await page.waitForTimeout(700);
+  }
+  await page.waitForSelector('.go-score', { timeout: 10000 });
+  await page.waitForTimeout(1500);
+  await shot('go-score');
+  await page.getByRole('button', { name: 'Ergebnis bestätigen' }).click();
+  await page.waitForSelector('.go-over');
+  ok((await page.locator('.go-over p').innerText()).includes('gewinnt'), 'Go: Zählen und Ergebnis');
+  await page.getByRole('button', { name: 'Menü' }).last().click();
+  // Lektion
+  await page.locator('.go-tile', { hasText: 'Lernen' }).click();
+  await page.locator('.go-lessons .go-card').nth(2).click();
+  await page.getByRole('button', { name: /Weiter/ }).click();
+  await page.waitForSelector('.go-problem');
+  await shot('go-lesson');
+  ok(true, 'Go: Lektion mit Aufgabe');
+  await page.getByRole('button', { name: 'Lösung zeigen' }).click();
+  await page.waitForSelector('.go-pulse');
+  ok(true, 'Go: Lösung wird angezeigt');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${e.message.split('\n')[0]}`); }
