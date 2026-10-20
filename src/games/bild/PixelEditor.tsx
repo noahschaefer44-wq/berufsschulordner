@@ -54,10 +54,21 @@ export default function PixelEditor({ init, theme, onPlay, onSave, onPhoto }: Pr
     const x = Math.floor(((e.clientX - r.left) * (w * cell + 2)) / r.width / cell), y = Math.floor(((e.clientY - r.top) * (h * cell + 2)) / r.height / cell);
     return x < 0 || y < 0 || x >= w || y >= h ? -1 : y * w + x;
   };
+  const lastCell = useRef(-1);
   const paint = (i: number) => {
     if (i < 0 || painting.current === null) return;
-    if (bits[i] === painting.current) return;
-    const nb = bits.slice(); nb[i] = painting.current; setBits(nb); setReport(null);
+    // Zellen zwischen dem letzten und dem aktuellen Punkt mitnehmen (schnelle Bewegungen)
+    const cells: number[] = [];
+    if (lastCell.current >= 0 && lastCell.current !== i) {
+      const x0 = lastCell.current % w, y0 = Math.floor(lastCell.current / w), x1 = i % w, y1 = Math.floor(i / w);
+      const steps = Math.max(Math.abs(x1 - x0), Math.abs(y1 - y0));
+      for (let k = 1; k <= steps; k++) cells.push(Math.round(y0 + ((y1 - y0) * k) / steps) * w + Math.round(x0 + ((x1 - x0) * k) / steps));
+    } else cells.push(i);
+    lastCell.current = i;
+    const nb = bits.slice();
+    let changed = false;
+    for (const c of cells) if (nb[c] !== painting.current) { nb[c] = painting.current; changed = true; }
+    if (changed) { setBits(nb); setReport(null); }
   };
 
   const check = () => {
@@ -128,9 +139,9 @@ export default function PixelEditor({ init, theme, onPlay, onSave, onPhoto }: Pr
         <canvas
           ref={cv} className="bd-canvas" style={{ width: w * cell + 2, height: h * cell + 2, touchAction: 'none' }}
           onContextMenu={(e) => e.preventDefault()}
-          onPointerDown={(e) => { e.preventDefault(); (e.target as HTMLElement).setPointerCapture?.(e.pointerId); const i = idx(e); if (i < 0) return; painting.current = e.button === 2 ? 0 : bits[i] ? 0 : 1; paint(i); }}
+          onPointerDown={(e) => { e.preventDefault(); (e.target as HTMLElement).setPointerCapture?.(e.pointerId); const i = idx(e); if (i < 0) return; lastCell.current = -1; painting.current = e.button === 2 ? 0 : bits[i] ? 0 : 1; paint(i); }}
           onPointerMove={(e) => paint(idx(e))}
-          onPointerUp={() => { painting.current = null; }}
+          onPointerUp={() => { painting.current = null; lastCell.current = -1; }}
           onPointerCancel={() => { painting.current = null; }}
         />
         {report && <div className={'bd-hint' + (report.kind === 'ok' ? ' ok' : '')} role="status">{report.text}</div>}

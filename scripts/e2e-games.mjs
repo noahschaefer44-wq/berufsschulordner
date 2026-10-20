@@ -116,6 +116,36 @@ games.bild = async () => {
   await shot('bild-editor');
   ok((await page.locator('.bd-hint').count()) > 0, 'Bildrätsel: Editor prüft');
 };
+games.lager = async () => {
+  await page.locator('.gh-box[data-game="lager"]').click();
+  await page.waitForSelector('.lg-levels');
+  await page.locator('.lg-levels button').first().click();
+  await page.waitForSelector('.lg-canvas');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  await page.waitForSelector('.lg-modal');
+  await shot('lager-solved');
+  ok(true, 'Lagerhaus: Einführungslevel gelöst');
+  await page.getByRole('button', { name: /Nächstes Level/ }).click();
+  await page.waitForSelector('.lg-canvas');
+  await page.getByRole('button', { name: /Hinweis/ }).click();
+  await page.waitForTimeout(500);
+  await shot('lager-hint');
+  await page.getByRole('button', { name: 'Level', exact: true }).click();
+  await page.getByRole('tab', { name: /Pakete/ }).click();
+  await page.locator('.lg-pack').nth(1).locator('.lg-levels button').first().click();
+  await page.waitForSelector('.lg-canvas', { timeout: 20000 });
+  await page.getByRole('button', { name: /Hinweis/ }).click();
+  await page.waitForTimeout(800);
+  await shot('lager-p1');
+  ok(true, 'Lagerhaus: Paketlevel erzeugt');
+  await page.getByRole('button', { name: 'Editor' }).click();
+  await page.waitForSelector('.lg-editor');
+  await page.getByRole('button', { name: 'Prüfen' }).click();
+  await page.waitForTimeout(500);
+  await shot('lager-editor');
+  ok((await page.locator('.lg-note').count()) > 0, 'Lagerhaus: Editor prüft');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${e.message.split('\n')[0]}`); }

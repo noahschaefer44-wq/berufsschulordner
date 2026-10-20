@@ -1,0 +1,79 @@
+/* Lagerhaus – Industrie-Optik: Warnband in Gelb/Schwarz, Beton, Sicherheitsschilder, schmale Grotesk-Schrift (Barlow Condensed) */
+.lg { --bg: #232321; --panel: #2f2f2c; --panel2: #3a3a36; --line: #4a4a45; --text: #ecebe4; --soft: #a9a89e; --yellow: #f5c400; --orange: #f26b1d; --green: #2ecc71; --red: #e0402f;
+  min-height: 100%; background: var(--bg) radial-gradient(1100px 500px at 50% -10%, rgba(245, 196, 0, .08), transparent 70%); color: var(--text); font-family: 'Barlow Condensed', 'Arial Narrow', 'Segoe UI', sans-serif; font-weight: 500; font-size: 17px; line-height: 1.35; padding-bottom: 70px; }
+.lg[data-skin='pixel'] { --bg: #0e1118; --panel: #171c28; --panel2: #202739; --line: #343e5a; --yellow: #4cf0a8; }
+.lg[data-skin='blau'] { --bg: #0b2447; --panel: #123766; --panel2: #1a4a85; --line: #2e6aa8; --yellow: #ffd166; --text: #eaf3ff; --soft: #9fbbe0; }
+.lg *, .lg *::before, .lg *::after { box-sizing: border-box; }
+.lg button { font: inherit; font-weight: 700; color: inherit; cursor: pointer; letter-spacing: .03em; }
+.lg-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; padding: 0 0 0 0; background: var(--panel); border-bottom: 3px solid var(--yellow); position: relative; }
+.lg-tape { height: 14px; width: 100%; background: repeating-linear-gradient(-45deg, var(--yellow) 0 16px, #111 16px 32px); }
+.lg-head .lg-tape { position: absolute; top: 0; left: 0; right: 0; }
+.lg-title { padding: 24px 20px 10px; display: grid; }
+.lg-title h1 { margin: 0; font-size: 38px; font-weight: 700; text-transform: uppercase; letter-spacing: .12em; line-height: 1; color: var(--yellow); }
+.lg-title span { color: var(--soft); text-transform: uppercase; letter-spacing: .14em; font-size: 14px; }
+.lg-head nav { margin-left: auto; display: flex; align-items: stretch; padding-top: 14px; }
+.lg-head nav button { background: none; border: 0; border-left: 2px solid var(--line); padding: 0 20px; min-height: 58px; text-transform: uppercase; letter-spacing: .12em; font-size: 16px; }
+.lg-head nav button:hover { background: var(--panel2); }
+.lg-head nav button.on { background: var(--yellow); color: #111; }
+.lg-head nav button.done { color: var(--green); }
+.lg-head nav .x { font-size: 20px; }
+.lg-busy { text-align: center; padding: 22px; color: var(--yellow); text-transform: uppercase; letter-spacing: .14em; }
+.lg-menu { max-width: 1080px; margin: 18px auto; padding: 0 18px; }
+.lg-tabs { display: flex; gap: 2px; margin-bottom: 14px; }
+.lg-tabs button { background: var(--panel); border: 2px solid var(--line); padding: 8px 22px; text-transform: uppercase; letter-spacing: .1em; }
+.lg-tabs button.on { background: var(--yellow); color: #111; border-color: var(--yellow); }
+.lg-pack { margin-bottom: 26px; }
+.lg-pack h2 { font-size: 24px; text-transform: uppercase; letter-spacing: .1em; margin: 0 0 8px; border-left: 8px solid var(--yellow); padding-left: 12px; }
+.lg-pack h2 small { color: var(--soft); font-size: 14px; text-transform: none; letter-spacing: .02em; margin-left: 8px; }
+.lg-levels { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+.lg-levels button { display: grid; justify-items: center; gap: 0; padding: 8px 4px 6px; background: var(--panel); border: 2px solid var(--line); transition: transform .1s, border-color .1s; }
+.lg-levels button:hover { border-color: var(--yellow); transform: translateY(-2px); }
+.lg-levels button b { font-size: 26px; line-height: 1.1; }
+.lg-levels button small { color: var(--soft); font-size: 12.5px; text-align: center; line-height: 1.2; min-height: 15px; }
+.lg-stars { color: #55554e; font-size: 15px; letter-spacing: 2px; }
+.lg-stars i { font-style: normal; } .lg-stars i.on { color: var(--yellow); }
+.lg-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; max-width: 700px; }
+.lg-list li { display: flex; align-items: center; gap: 6px; padding: 8px 12px; background: var(--panel); border: 2px solid var(--line); }
+.lg-list li span { flex: 1; }
+.lg-btns { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+.lg-btns.center { justify-content: center; }
+.lg-btns button, .lg-list button, .lg-seg button { background: var(--panel2); border: 2px solid var(--line); padding: 7px 16px; text-transform: uppercase; letter-spacing: .08em; font-size: 15px; }
+.lg-btns button:hover:not(:disabled), .lg-list button:hover, .lg-seg button:hover { border-color: var(--yellow); }
+.lg-btns button.on, .lg-seg button.on { background: var(--yellow); border-color: var(--yellow); color: #111; }
+.lg-btns button:disabled { opacity: .35; cursor: default; }
+.lg-primary { background: var(--yellow) !important; color: #111 !important; border-color: var(--yellow) !important; }
+.lg-link { background: none; border: 0; text-decoration: underline; text-underline-offset: 3px; color: var(--yellow); }
+.lg textarea { width: 100%; background: var(--panel); color: var(--text); border: 2px solid var(--line); padding: 10px; font: 15px ui-monospace, Consolas, monospace; }
+.lg-small { color: var(--soft); font-size: 15px; max-width: 70ch; }
+.lg code { background: var(--panel2); padding: 0 6px; }
+.lg-play, .lg-editor { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; max-width: 1240px; margin: 16px auto; padding: 0 18px; }
+.lg-stage { flex: 1 1 560px; min-width: 280px; }
+.lg-side { flex: 0 0 310px; display: grid; gap: 14px; min-width: 260px; }
+.lg-bar { display: flex; gap: 20px; align-items: baseline; flex-wrap: wrap; margin-bottom: 8px; font-variant-numeric: tabular-nums; text-transform: uppercase; letter-spacing: .08em; font-size: 16px; }
+.lg-bar b { font-size: 24px; letter-spacing: .1em; color: var(--yellow); }
+.lg-mode { background: var(--orange); color: #111; padding: 0 10px; font-weight: 700; }
+.lg-canvaswrap { width: fit-content; max-width: 100%; overflow: auto; border: 4px solid #111; box-shadow: 0 0 0 3px var(--yellow), 0 14px 30px rgba(0, 0, 0, .45); line-height: 0; }
+.lg-canvas { display: block; cursor: pointer; }
+.lg-note { margin-top: 12px; padding: 9px 14px; background: var(--panel2); border-left: 6px solid var(--yellow); max-width: 70ch; }
+.lg-note.bad { border-left-color: var(--red); background: rgba(224, 64, 47, .16); }
+.lg-note.ok { border-left-color: var(--green); }
+.lg-box { display: grid; gap: 8px; padding: 12px 14px; background: var(--panel); border: 2px solid var(--line); }
+.lg-box h3 { margin: 0; font-size: 15px; text-transform: uppercase; letter-spacing: .14em; color: var(--yellow); }
+.lg-box label, .lg-slide { display: flex; justify-content: space-between; align-items: center; gap: 10px; font-size: 16px; }
+.lg-seg { display: flex; flex-wrap: wrap; gap: 6px; }
+.lg input[type='checkbox'] { width: 20px; height: 20px; accent-color: var(--yellow); }
+.lg input[type='range'] { accent-color: var(--yellow); }
+.lg-name { width: 100%; background: none; color: var(--yellow); border: 0; border-bottom: 3px solid var(--yellow); font: 700 26px 'Barlow Condensed', sans-serif; text-transform: uppercase; letter-spacing: .1em; padding: 0 0 4px; margin-bottom: 10px; }
+.lg-palette { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.lg-palette button { display: flex; align-items: center; gap: 8px; background: var(--panel2); border: 2px solid var(--line); padding: 6px 10px; text-align: left; font-size: 15px; }
+.lg-palette button b { width: 22px; text-align: center; font-family: ui-monospace, Consolas, monospace; color: var(--yellow); }
+.lg-palette button.on { border-color: var(--yellow); background: rgba(245, 196, 0, .16); }
+.lg-canvas.edit { cursor: crosshair; border: 4px solid #111; box-shadow: 0 0 0 3px var(--yellow); }
+.lg-modal { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; background: rgba(0, 0, 0, .6); padding: 16px; }
+.lg-modal-box { background: var(--panel); border: 3px solid var(--yellow); text-align: center; padding: 0 28px 22px; min-width: min(420px, 100%); position: relative; overflow: hidden; }
+.lg-modal-box .lg-tape { margin: 0 -28px 14px; width: calc(100% + 56px); }
+.lg-modal-box h2 { margin: 0; font-size: 34px; text-transform: uppercase; letter-spacing: .12em; color: var(--yellow); }
+.lg-modal-box .lg-stars { font-size: 34px; display: block; margin: 4px 0; }
+.lg-big { font-size: 46px; font-weight: 700; margin: 0; line-height: 1.1; }
+@media (max-width: 720px) { .lg-title h1 { font-size: 28px; } .lg-head nav button { padding: 0 11px; font-size: 14px; } .lg-side { flex: 1 1 100%; } .lg-play, .lg-editor { padding: 0 10px; } }
+@media (prefers-reduced-motion: reduce) { .lg * { transition: none !important; } }
