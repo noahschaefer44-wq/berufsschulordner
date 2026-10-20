@@ -47,6 +47,8 @@ export interface TypingData {
   arcade: number;
   /** Rennspiel: Rennen, Siege, Grand-Prix-Pokale */
   races: number; wins: number; cups: { gold: number; silver: number; bronze: number };
+  /** Bestwerte der Spiele (Schlüssel = Spielname) */
+  hi: Record<string, number>;
 }
 
 const KEY = 'tp.v1';
@@ -57,7 +59,7 @@ function fresh(): TypingData {
   return {
     v: 1, settings: { ...DEFAULT_SETTINGS }, runs: [], keys: {}, pairs: {}, lessons: {}, xp: 0, days: {}, badges: [], texts: [], lists: [],
     decks: DEFAULT_DECKS.map((d) => ({ id: uid(), name: d.name, cards: d.cards.map((c) => ({ id: uid(), q: c.q, a: c.a, box: 0, due: 0 })) })),
-    best: {}, arcade: 0, races: 0, wins: 0, cups: { gold: 0, silver: 0, bronze: 0 },
+    best: {}, arcade: 0, races: 0, wins: 0, cups: { gold: 0, silver: 0, bronze: 0 }, hi: {},
   };
 }
 

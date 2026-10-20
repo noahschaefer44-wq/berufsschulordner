@@ -7,23 +7,50 @@ export function Progress({ value, max }: { value: number; max: number }) {
   return <div className="tp-bar"><i style={{ width: `${Math.min(100, (value / Math.max(1, max)) * 100)}%` }} /></div>;
 }
 
+/** Fortschrittsring (Apple-Fitness-Stil). */
+export function Ring({ value, max, label, size = 92 }: { value: number; max: number; label: string; size?: number }) {
+  const r = 38, c = 2 * Math.PI * r;
+  const f = Math.max(0, Math.min(1, value / Math.max(1, max)));
+  return (
+    <div className="tp-ring" style={{ ['--s' as string]: `${size}px` }} role="img" aria-label={`${label}: ${Math.round(f * 100)} %`}>
+      <svg viewBox="0 0 92 92"><circle className="bg" cx="46" cy="46" r={r} /><circle className="fg" cx="46" cy="46" r={r} strokeDasharray={c} strokeDashoffset={c * (1 - f)} /></svg>
+      <span style={{ display: 'grid', textAlign: 'center', lineHeight: 1.1 }}><b>{Math.round(f * 100)}%</b><small>{label}</small></span>
+    </div>
+  );
+}
+
 function Chart({ values, label }: { values: number[]; label: string }) {
-  const w = 640, h = 180, pad = 28;
+  const w = 640, h = 190, pad = 30;
+  const uid = label.replace(/\W/g, '');
   if (values.length < 2) return <p className="tp-sub">Noch zu wenig Daten für ein Diagramm.</p>;
   const max = Math.ceil(Math.max(...values, 20) / 10) * 10;
-  const x = (i: number) => pad + (i / (values.length - 1)) * (w - pad - 8);
-  const y = (v: number) => h - pad - (v / max) * (h - pad - 10);
+  const x = (i: number) => pad + (i / (values.length - 1)) * (w - pad - 12);
+  const y = (v: number) => h - pad - (v / max) * (h - pad - 14);
+  // weiche Kurve (Catmull-Rom → Bézier)
+  const pts = values.map((v, i) => [x(i), y(v)] as const);
+  let line = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[i - 1] ?? pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] ?? p2;
+    line += ` C ${p1[0] + (p2[0] - p0[0]) / 6} ${p1[1] + (p2[1] - p0[1]) / 6}, ${p2[0] - (p3[0] - p1[0]) / 6} ${p2[1] - (p3[1] - p1[1]) / 6}, ${p2[0]} ${p2[1]}`;
+  }
+  const area = `${line} L ${pts[pts.length - 1][0]} ${h - pad} L ${pts[0][0]} ${h - pad} Z`;
+  const last = pts[pts.length - 1];
   return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="tp-chart" role="img" aria-label={label}>
-      {[0, 0.5, 1].map((f) => (
-        <g key={f}>
-          <line x1={pad} x2={w - 8} y1={y(max * f)} y2={y(max * f)} stroke="var(--tp-line)" />
-          <text x={2} y={y(max * f) + 4} fontSize="11" fill="var(--tp-dim)">{Math.round(max * f)}</text>
-        </g>
-      ))}
-      <polyline points={values.map((v, i) => `${x(i)},${y(v)}`).join(' ')} fill="none" stroke="var(--tp-accent)" strokeWidth="2.5" strokeLinejoin="round" />
-      {values.map((v, i) => <circle key={i} cx={x(i)} cy={y(v)} r="3" fill="var(--tp-accent)" />)}
-    </svg>
+    <div className="glass tp-pad">
+      <svg viewBox={`0 0 ${w} ${h}`} className="tp-chart" role="img" aria-label={label}>
+        <defs><linearGradient id={`g${uid}`} x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="var(--tp-accent)" stopOpacity=".35" /><stop offset="1" stopColor="var(--tp-accent)" stopOpacity="0" /></linearGradient></defs>
+        {[0, 0.5, 1].map((f) => (
+          <g key={f}>
+            <line x1={pad} x2={w - 8} y1={y(max * f)} y2={y(max * f)} stroke="var(--tp-line)" strokeDasharray="3 5" />
+            <text x={2} y={y(max * f) + 4} fontSize="11" fill="var(--tp-dim)">{Math.round(max * f)}</text>
+          </g>
+        ))}
+        <path d={area} fill={`url(#g${uid})`} />
+        <path d={line} fill="none" stroke="var(--tp-accent)" strokeWidth="3" strokeLinecap="round" />
+        <circle cx={last[0]} cy={last[1]} r="5.5" fill="var(--tp-accent)" stroke="#fff" strokeWidth="2.5" />
+        <text x={Math.min(last[0], w - 30)} y={last[1] - 12} fontSize="12" fontWeight="700" textAnchor="middle" fill="var(--tp-fg)">{values[values.length - 1]}</text>
+      </svg>
+    </div>
   );
 }
 
@@ -88,7 +115,7 @@ export default function Stats() {
         <button className={heat === 'fehler' ? 'on' : ''} onClick={() => setHeat('fehler')}>Fehler</button>
         <button className={heat === 'tempo' ? 'on' : ''} onClick={() => setHeat('tempo')}>Langsame Tasten</button>
       </div>
-      <Keyboard layout={layout} heat={heatFn} />
+      <div className="glass tp-pad"><Keyboard layout={layout} heat={heatFn} /></div>
 
       <h3>Abzeichen ({d.badges.length}/{BADGES.length})</h3>
       <div className="tp-badges">

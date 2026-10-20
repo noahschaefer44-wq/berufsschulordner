@@ -26,7 +26,7 @@ ok(await page.getByText('Testordner').count() > 0, 'Ordner bleibt nach Neuladen'
 // ── Tipptraining ──
 await page.getByLabel('Einstellungen').click();
 for (let i = 0; i < 5; i++) await page.getByText('Version').click();
-await page.waitForSelector('text=Tipptraining');
+await page.waitForSelector('.tp-side');
 ok(true, 'Tipptraining öffnet über Version-Tipp');
 
 const shot = (n) => process.env.E2E_SHOTS ? page.screenshot({ path: process.env.E2E_SHOTS + n + '.png' }) : null;
@@ -71,6 +71,28 @@ await page.waitForTimeout(1500);
 ok(await page.locator('.tp-fall').count() > 0, 'Wort-Regen: Wörter fallen');
 await shot('rain');
 
+// Abschreiben
+await page.locator('.tp-side').getByRole('button', { name: /Training/ }).click();
+await page.getByRole('button', { name: 'Abschreiben', exact: true }).click();
+await page.getByRole('button', { name: 'Abschreiben starten' }).click();
+const ref = (await page.locator('.cp-ref').innerText()).replace(/\s+/g, ' ').trim();
+await page.locator('.cp-input').fill(ref.slice(0, Math.floor(ref.length / 2)));
+await page.getByRole('button', { name: /Fertig/ }).click();
+await page.waitForSelector('.cp-diff');
+ok(true, 'Abschreiben: Vergleich sichtbar');
+await shot('copy-diff');
+
+// weitere Spiele
+const games = [['Monster-Duell', 'Kampf beginnen', '.wu-monster'], ['Raketenstart', 'Countdown starten', '.wu-rocket'], ['Fließband', 'Band starten', '.wu-tile-c'], ['Merk-Modus', 'Los', '.wu-memcard']];
+for (const [name, btn, sel] of games) {
+  await page.locator('.tp-side').getByRole('button', { name: /Statistik/ }).click();
+  await page.locator('.tp-side').getByRole('button', { name: /Spiele/ }).click();
+  await page.getByText(name, { exact: true }).first().click();
+  await page.getByRole('button', { name: btn, exact: true }).click();
+  await page.waitForTimeout(900);
+  ok(await page.locator(sel).count() > 0, `Spiel ${name} läuft`);
+  await shot('game-' + name.replace(/\W/g, ''));
+}
 ok(errors.length === 0, 'keine Skriptfehler ' + errors.join(' | '));
 await browser.close();
 process.exit(bad ? 1 : 0);

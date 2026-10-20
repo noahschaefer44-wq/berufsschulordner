@@ -1,0 +1,59 @@
+/* Feinschliff: Cursor-Anzeige, Abschreiben, Ringe, Scrollbars (lädt nach typing.css) */
+.tp { scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--tp-fg) 25%, transparent) transparent; }
+.tp ::selection { background: color-mix(in srgb, var(--tp-accent) 35%, transparent); }
+.tp-side { scrollbar-width: none; }
+
+/* Schreibposition: gleitender Cursor, aktuelles Wort, Fortschrittsfaden */
+.tp-text span.cur, .tp-text.cur-linie span.cur, .tp-text.cur-unterstrich span.cur { background: none; box-shadow: none; animation: none; color: var(--tp-fg); }
+.tp-text span.ok { color: color-mix(in srgb, var(--tp-fg) 82%, transparent); }
+.tp-text span.wd:not(.ok):not(.bad) { color: var(--tp-fg); }
+.tp-text span.wd { background: color-mix(in srgb, var(--tp-accent) 11%, transparent); }
+.tp-text span.wd.bad { background: color-mix(in srgb, var(--tp-red) 18%, transparent); }
+.tp-inner { position: relative; }
+.tp-caret { position: absolute; left: 0; top: 0; pointer-events: none; border-radius: 4px; z-index: 1;
+  background: color-mix(in srgb, var(--tp-accent) 28%, transparent); transition: transform .12s cubic-bezier(.2, .8, .3, 1), width .12s, height .12s, background .15s; }
+.tp-caret:not(.go) { animation: tp-pulse 1.2s ease-in-out infinite; }
+@keyframes tp-pulse { 50% { opacity: .35; } }
+.tp-caret.err { background: color-mix(in srgb, var(--tp-red) 45%, transparent); }
+.tp-text.cur-linie .tp-caret { width: 3px !important; margin-left: -1px; background: var(--tp-accent); border-radius: 3px; box-shadow: 0 0 12px color-mix(in srgb, var(--tp-accent) 75%, transparent); }
+.tp-text.cur-linie .tp-caret.err { background: var(--tp-red); box-shadow: 0 0 12px color-mix(in srgb, var(--tp-red) 75%, transparent); }
+.tp-text.cur-unterstrich .tp-caret { height: 3px !important; margin-top: 1.18em; background: var(--tp-accent); border-radius: 3px; }
+.tp-text.cur-unterstrich .tp-caret.err { background: var(--tp-red); }
+.tp-progress { position: relative; height: 6px; border-radius: 99px; background: color-mix(in srgb, var(--tp-fg) 10%, transparent); margin: 2px 8px 22px; }
+.tp-progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--tp-accent), color-mix(in srgb, var(--tp-accent) 55%, #fff)); transition: width .15s; }
+.tp-progress span { position: absolute; right: 0; top: 10px; font-size: 11px; color: var(--tp-dim); font-variant-numeric: tabular-nums; }
+.wu-pad .tp-text .tp-caret { background: #bfeaff; }
+.wu-pad .tp-text.cur-linie .tp-caret { background: #00a9e0; box-shadow: none; }
+.wu-pad .tp-progress i { background: #00a9e0; }
+.wu-pad .tp-text span.wd:not(.ok):not(.bad) { color: #16465e; }
+.wu-pad .tp-text span.wd { background: #e4f6ff; }
+
+/* Abschreiben */
+.cp-wrap { display: grid; gap: 14px; margin-top: 10px; }
+.cp-ref { padding: 20px 24px; max-height: 38vh; overflow-y: auto; font-family: var(--tp-font); font-size: calc(var(--tp-size) * .78); line-height: 1.7; user-select: none; }
+.cp-ref span { transition: background .2s; border-radius: 6px; }
+.cp-ref .cp-here { background: color-mix(in srgb, var(--tp-accent) 22%, transparent); }
+.cp-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--tp-dim); font-variant-numeric: tabular-nums; }
+.cp-bar .tp-btn { margin: 0; }
+.cp-input { width: 100%; padding: 20px 24px; font-family: var(--tp-font); font-size: calc(var(--tp-size) * .78); line-height: 1.7; resize: vertical; outline: none; color: var(--tp-fg); min-height: 200px; }
+.cp-input:focus { box-shadow: var(--tp-shadow), 0 0 0 3px color-mix(in srgb, var(--tp-accent) 35%, transparent); }
+.cp-diff { padding: 20px 24px; font-family: var(--tp-font); font-size: calc(var(--tp-size) * .78); line-height: 1.8; }
+.cp-wrong { color: var(--tp-orange); background: color-mix(in srgb, var(--tp-orange) 16%, transparent); border-radius: 5px; }
+.cp-missing { color: var(--tp-red); background: color-mix(in srgb, var(--tp-red) 14%, transparent); border-radius: 5px; text-decoration: underline wavy; }
+
+/* Ringe */
+.tp-ring { position: relative; display: grid; place-items: center; width: var(--s, 92px); height: var(--s, 92px); flex: none; }
+.tp-ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+.tp-ring circle { fill: none; stroke-width: 9; stroke-linecap: round; }
+.tp-ring .bg { stroke: color-mix(in srgb, var(--tp-fg) 12%, transparent); }
+.tp-ring .fg { stroke: var(--tp-accent); transition: stroke-dashoffset .8s var(--tp-spring); }
+.tp-ring b { font-size: 20px; letter-spacing: -.02em; }
+.tp-hero { grid-template-columns: auto repeat(4, 1fr); align-items: center; }
+.tp-hero .rings { display: flex; gap: 14px; grid-row: span 2; }
+.tp-hero .wide { grid-column: 2 / -1; }
+.tp-result .tp-ring { margin: 0 auto 8px; --s: 120px; }
+@media (max-width: 780px) {
+  .tp-hero { grid-template-columns: repeat(2, 1fr); }
+  .tp-hero .rings { grid-column: 1 / -1; grid-row: auto; justify-content: center; }
+  .tp-hero .wide { grid-column: 1 / -1; }
+}

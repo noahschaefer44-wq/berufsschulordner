@@ -7,16 +7,18 @@ import Dictation from './Dictation';
 import Games from './Games';
 import Lessons from './Lessons';
 import Settings, { themeVars } from './Settings';
-import Stats, { Progress } from './Stats';
+import Stats, { Ring } from './Stats';
 import Texts from './Texts';
 import Train, { Weak } from './Train';
 import { buildLessons } from './layouts';
 import { dayKey, levelOf, streak, useData, xpForLevel } from './store';
 import './typing.css';
 import './wiiu.css';
+import './polish.css';
+import './wiiu2.css';
 
 type Page = 'start' | 'schule' | 'training' | 'spiele' | 'schwach' | 'texte' | 'karten' | 'diktat' | 'stats' | 'settings';
-type Preset = 'sprint' | 'daily';
+type Preset = 'sprint' | 'daily' | 'copy';
 
 const ICONS: Record<Page | 'mehr', ReactNode> = {
   start: <path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4.5v-6h-5v6H5a1 1 0 0 1-1-1z" />,
@@ -64,24 +66,24 @@ function Home({ go }: { go: (p: Page, preset?: Preset) => void }) {
   );
   return (
     <section>
-      <h2>Tipptraining</h2>
+      <h2>{new Date().getHours() < 11 ? 'Guten Morgen' : new Date().getHours() < 18 ? 'Hallo' : 'Guten Abend'}</h2>
       <p className="tp-sub">Schneller und sicherer schreiben – mit echten Texten, Rennen und Karteikarten. Alles bleibt in deinem Browser.</p>
       <div className="tp-hero glass">
-        <div><small>Level</small><b>{lv}</b></div>
+        <div className="rings">
+          <Ring value={today} max={d.settings.goalMin} label="Tagesziel" />
+          <Ring value={d.xp - xpForLevel(lv)} max={xpForLevel(lv + 1) - xpForLevel(lv)} label={`Level ${lv}`} />
+        </div>
         <div><small>Serie</small><b>{streak(d)} 🔥</b></div>
         <div><small>Letztes Tempo</small><b>{d.runs.slice(-1)[0]?.wpm ?? 0}</b></div>
-        <div><small>Bestes Tempo</small><b>{Math.round(d.runs.reduce((a, r) => Math.max(a, r.wpm), 0))}</b></div>
-        <div className="wide">
-          <small>Nächstes Level: {xpForLevel(lv + 1) - d.xp} XP</small>
-          <Progress value={d.xp - xpForLevel(lv)} max={xpForLevel(lv + 1) - xpForLevel(lv)} />
-          <small>Tagesziel: {today} / {d.settings.goalMin} min</small>
-          <Progress value={today} max={d.settings.goalMin} />
-        </div>
+        <div><small>Bestes Tempo</small><b>{Math.round(d.runs.reduce((acc, r) => Math.max(acc, r.wpm), 0))}</b></div>
+        <div><small>Heute</small><b>{today} min</b></div>
+        <div className="wide"><small>Noch {xpForLevel(lv + 1) - d.xp} XP bis Level {lv + 1} · Tagesziel {d.settings.goalMin} min</small></div>
       </div>
       <h3>Los geht’s</h3>
       <div className="tp-tiles">
         {tile('schule', next ? `Weiter: ${next.title}` : 'Schreibschule', `${Object.keys(d.lessons).length} von ${lessons.length} Stufen`)}
         {tile('training', 'Sprint', '15–120 Sekunden Tempo', 'sprint')}
+        {tile('training', 'Abschreiben', 'Fließtext oben, du schreibst unten ab', 'copy')}
         {tile('training', 'Tagestext', 'Heute für alle derselbe Text', 'daily')}
         {tile('spiele', 'Spiele', `Grand Prix · ${d.wins} Siege`)}
         {tile('schwach', 'Schwachstellen', 'Texte passend zu deinen Fehlern')}
@@ -123,7 +125,7 @@ export default function TypingApp() {
         <main className="tp-main" key={page + (preset ?? '')}>
           {page === 'start' && <Home go={go} />}
           {page === 'schule' && <Lessons />}
-          {page === 'training' && <Train initial={preset} autoStart={preset !== undefined} />}
+          {page === 'training' && <Train initial={preset} autoStart={preset === 'sprint' || preset === 'daily'} />}
           {page === 'spiele' && <Games />}
           {page === 'schwach' && <Weak />}
           {page === 'texte' && <Texts />}

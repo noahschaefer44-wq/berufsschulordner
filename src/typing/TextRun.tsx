@@ -171,10 +171,20 @@ export default function TextRun(p: TextRunProps) {
   }, [result, p.timeLimit, finish, text]);
 
   const idx = typed.length;
+  const [caret, setCaret] = useState({ x: 0, y: 0, w: 0, h: 0 });
   useEffect(() => {
     const b = box.current, c = cur.current;
-    if (b && c) b.scrollTop = Math.max(0, c.offsetTop - c.offsetHeight * 0.2);
-  }, [idx, text, s.size]);
+    if (!c) return;
+    setCaret({ x: c.offsetLeft, y: c.offsetTop, w: c.offsetWidth, h: c.offsetHeight });
+    if (b) b.scrollTo({ top: Math.max(0, c.offsetTop - c.offsetHeight * 0.9), behavior: idx === 0 ? 'auto' : 'smooth' });
+  }, [idx, text, s.size, s.font]);
+  // aktuelles Wort (für die Hervorhebung)
+  let ws = idx, we = idx;
+  if (idx < text.length) {
+    while (ws > 0 && text[ws - 1] !== ' ' && text[ws - 1] !== '\n') ws--;
+    while (we < text.length && text[we] !== ' ' && text[we] !== '\n') we++;
+  }
+  const lastBad = idx > 0 && typed[idx - 1] !== text[idx - 1];
 
   const running = t.current.start > 0;
   const onProg = p.onProgress;
@@ -225,15 +235,21 @@ export default function TextRun(p: TextRunProps) {
           })}
         </div>
       )}
+      <div className="tp-progress" aria-hidden="true"><i style={{ width: `${(idx / Math.max(1, text.length)) * 100}%` }} /><span>{idx} / {text.length}</span></div>
       <div className={'tp-text cur-' + s.cursor + (p.blind ? ' blind' : '')} ref={box}>
-        {text.split('').map((ch, i) => {
-          const cls = i < idx ? (typed[i] === ch ? 'ok' : 'bad') : i === idx ? 'cur' : '';
-          return (
-            <span key={i} ref={i === idx ? cur : undefined} className={cls}>
-              {ch === '\n' ? <>↵<br /></> : ch === ' ' && cls === 'bad' ? '·' : ch}
-            </span>
-          );
-        })}
+        <div className="tp-inner">
+          {text.split('').map((ch, i) => {
+            const cls = (i < idx ? (typed[i] === ch ? 'ok' : 'bad') : i === idx ? 'cur' : '') + (i >= ws && i < we && !p.blind ? ' wd' : '');
+            return (
+              <span key={i} ref={i === idx ? cur : undefined} className={cls}>
+                {ch === '\n' ? <>↵<br /></> : ch === ' ' && cls.startsWith('bad') ? '·' : ch}
+              </span>
+            );
+          })}
+          {idx < text.length && (
+            <i className={'tp-caret' + (lastBad ? ' err' : '') + (running ? ' go' : '')} style={{ transform: `translate(${caret.x}px, ${caret.y}px)`, width: caret.w, height: caret.h }} />
+          )}
+        </div>
       </div>
       {note && <div className="tp-note">{note}</div>}
       {!running && !result && <div className="tp-hint">Tippe los – die Zeit startet beim ersten Anschlag. <kbd>Tab</kbd> = neu starten.</div>}

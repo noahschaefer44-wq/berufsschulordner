@@ -3,12 +3,14 @@ import { QUOTES, SNIPPETS } from './data';
 import { dailyText, randomSnippet, shuffle, sourceText, SOURCES, weakKeys, weakPairs, weakText } from './gen';
 import Keyboard from './Keyboard';
 import { layoutById } from './layouts';
+import Copy from './Copy';
 import TextRun from './TextRun';
 import { useData } from './store';
 
-type Mode = 'sprint' | 'quotes' | 'code' | 'wiki' | 'daily';
+type Mode = 'sprint' | 'copy' | 'quotes' | 'code' | 'wiki' | 'daily';
 const MODES: { id: Mode; name: string; info: string }[] = [
   { id: 'sprint', name: 'Sprint', info: 'Tippe so viel du kannst in 15 bis 120 Sekunden.' },
+  { id: 'copy', name: 'Abschreiben', info: 'Fließtext oben, du schreibst ihn unten ab – ohne Cursor in der Vorlage.' },
   { id: 'quotes', name: 'Zitate', info: 'Kluge Sätze abtippen.' },
   { id: 'code', name: 'Code', info: 'HTML, CSS, JavaScript, Python, SQL und mehr.' },
   { id: 'wiki', name: 'Wikipedia', info: 'Zufälliger Artikel-Anfang (lädt online).' },
@@ -94,6 +96,17 @@ export default function Train({ initial, autoStart }: { initial?: Mode; autoStar
   }
 
   const m = MODES.find((x) => x.id === mode)!;
+  if (mode === 'copy') {
+    return (
+      <section>
+        <h2>Training</h2>
+        <div className="tp-tabs">
+          {MODES.map((x) => <button key={x.id} className={x.id === mode ? 'on' : ''} onClick={() => setMode(x.id)}>{x.name}</button>)}
+        </div>
+        <Copy />
+      </section>
+    );
+  }
   return (
     <section>
       <h2>Training</h2>
