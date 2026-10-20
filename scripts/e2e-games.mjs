@@ -178,6 +178,25 @@ games.block = async () => {
   await page.waitForSelector('.bk-settings');
   ok(true, 'Blockfall: Einstellungen');
 };
+games.karten = async () => {
+  await page.locator('.gh-box[data-game="karten"]').click();
+  await page.waitForSelector('.kt-variants');
+  for (const [v, sel] of [['FreeCell', '.kb .kcw'], ['Spider', '.kb .kcw'], ['Pyramide', '.kb.pyr .kcw'], ['TriPeaks', '.kb.pyr .kcw'], ['Klondike', '.kb .kcw']]) {
+    if (!(await page.locator('.kt-variants').count())) await page.getByRole('button', { name: 'Neu', exact: true }).click();
+    await page.locator('.kt-variants button', { hasText: v }).first().click();
+    if (v === 'Klondike') await page.locator('.kt-opts label').first().locator('input').uncheck();
+    await page.getByRole('button', { name: 'Zufälliges Spiel' }).click();
+    await page.waitForSelector(sel, { timeout: 20000 });
+    await page.waitForTimeout(500);
+    await shot('karten-' + v);
+    ok((await page.locator(sel).count()) > 10, 'Patience: ' + v + ' startet');
+  }
+  // Klondike: Vorrat ziehen und Hinweis
+  await page.locator('.ks.stock').first().click({ force: true });
+  await page.getByRole('button', { name: /Hinweis/ }).click();
+  await page.waitForTimeout(1500);
+  ok(true, 'Patience: Hinweis und Ziehen');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${e.message.split('\n')[0]}`); }
