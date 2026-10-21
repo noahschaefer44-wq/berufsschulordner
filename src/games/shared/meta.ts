@@ -9,6 +9,7 @@ export interface GameMeta {
 }
 
 export const GAMES: GameMeta[] = [
+  { id: 'verlies', name: 'Verlies', tagline: 'Ein Rollenspiel in acht Ebenen: ein Leben, unbekannte Tränke, ein Drache.', genre: 'Abenteuer' },
   { id: 'wabe', name: 'Wabe', tagline: 'Ein Spiel ohne Brett: Insekten-Plättchen, Schwarm-Regeln, Königin einschließen.', genre: 'Strategie' },
   { id: 'kniffel', name: 'Kniffel', tagline: 'Würfeln, halten, eintragen – mit Chancen-Tabelle, Coach, Maxi-Kniffel und Tageswurf.', genre: 'Würfel' },
   { id: 'kalaha', name: 'Kalaha', tagline: 'Mancala: Kalah, Oware und Lawine – mit Vorschau, Coach und Aufgaben.', genre: 'Brettspiel' },

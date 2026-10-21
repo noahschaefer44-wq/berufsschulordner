@@ -244,7 +244,7 @@ export function KalahaCover() {
       {[0, 1, 2, 3, 4].map((j) => <circle key={j} cx="102" cy={122 - j * 5.4} r="3" fill={seed[j]} />)}
       {pits}
       <text x="60" y="48" textAnchor="middle" fontSize="19" fontFamily="'Marcellus',Georgia,serif" fill="#3a2410" letterSpacing="2">KALAHA</text>
-      <text x="60" y="62" textAnchor="middle" fontSize="7" fontFamily="'Josefin Sans',sans-serif" fill="#7a5a36" letterSpacing="1.5">MULDEN · SAMEN · SPEICHER</text>
+      <text x="60" y="62" textAnchor="middle" fontSize="5.4" fontFamily="'Josefin Sans',sans-serif" fill="#7a5a36" letterSpacing="1">MULDEN · SAMEN · SPEICHER</text>
     </Frame>
   );
 }
@@ -266,6 +266,22 @@ export function KniffelCover() {
       <text x="62" y="136" fontSize="22" fontFamily="'Caveat',cursive" fontWeight="700" fill="#1a3a8a" transform="rotate(-6 70 130)">50!</text>
       {die(30, 42, 5, -12)}{die(60, 30, 5, 8)}{die(90, 44, 5, -6)}{die(44, 66, 5, 14)}{die(78, 70, 5, -16)}
       <text x="60" y="15" textAnchor="middle" fontSize="8" fontFamily="'Special Elite',monospace" fill="#f0b440" letterSpacing="2">WÜRFELN · HALTEN</text>
+    </Frame>
+  );
+}
+
+export function VerliesCover() {
+  const rows = ['#######  ###########', '#.....#  #.........#', '#..@..+##+..r...!..#', '#.....#  #.........#', '###+###  ####+######', '  #...#      #..$.#', '  #.>.#      #.....#', '  #####      #######'];
+  return (
+    <Frame bg="#0a0705">
+      <defs><radialGradient id="vlc" cx="50%" cy="35%" r="75%"><stop offset="0" stopColor="rgba(255,170,60,.28)" /><stop offset="1" stopColor="rgba(0,0,0,0)" /></radialGradient></defs>
+      <rect width="120" height="160" fill="url(#vlc)" />
+      <g stroke="rgba(255,190,90,.08)">{Array.from({ length: 54 }, (_, i) => <line key={i} x1="0" y1={i * 3} x2="120" y2={i * 3} />)}</g>
+      <text x="60" y="30" textAnchor="middle" fontSize="22" fontFamily="'VT323',monospace" fill="#ffb347" letterSpacing="3">VERLIES</text>
+      <g fontFamily="'Fira Code',monospace" fontSize="7.4" fill="#d9a24a">
+        {rows.map((r, i) => <text key={i} x="7" y={52 + i * 9.5} xmlSpace="preserve" style={{ whiteSpace: 'pre' }}>{r}</text>)}
+      </g>
+      <text x="60" y="150" textAnchor="middle" fontSize="8" fontFamily="'VT323',monospace" fill="#b78e50" letterSpacing="2">8 EBENEN · 1 LEBEN</text>
     </Frame>
   );
 }
