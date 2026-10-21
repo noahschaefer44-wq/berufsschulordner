@@ -131,6 +131,38 @@ games.schiff = async () => {
   await page.waitForSelector('.ss-missions');
   ok(true, 'Seeschlacht: Kampagne');
 };
+games.poker = async () => {
+  await page.locator('.gh-box[data-game="poker"]').click();
+  await page.waitForSelector('.pk-setup');
+  await shot('poker-menu');
+  await page.locator('.pk-setup .pk-seg button[title="Anfänger"]').click();
+  await page.locator('.pk-setup .pk-seg button', { hasText: /^4$/ }).first().click();
+  await page.getByRole('button', { name: 'Platz nehmen' }).click();
+  await page.waitForSelector('.pk-felt');
+  let acted = 0;
+  for (let i = 0; i < 80 && acted < 8; i++) {
+    await page.waitForTimeout(700);
+    const call = page.locator('.pk-btns .call').first();
+    if (await call.count() && await call.isVisible()) { try { await call.click({ timeout: 1500 }); acted++; } catch { /* nächste Runde */ } }
+  }
+  await shot('poker-table');
+  ok(acted >= 6, 'Poker: ' + acted + ' Aktionen am Tisch');
+  ok((await page.locator('.pk-seat').count()) === 4, 'Poker: vier Plätze');
+  await page.getByRole('button', { name: /Tisch verlassen/ }).click();
+  await page.locator('.pk-tile', { hasText: 'Trainer' }).click();
+  await page.locator('.pk-cards .pk-card').first().click();
+  await page.waitForSelector('.pk-quiz');
+  await shot('poker-trainer');
+  ok(true, 'Poker: Trainer');
+  await page.getByRole('button', { name: /Trainer/ }).first().click();
+  await page.getByRole('button', { name: /Menü/ }).first().click();
+  await page.locator('.pk-tile', { hasText: 'Lernen' }).click();
+  await page.locator('.pk-lessons .pk-card').nth(1).click();
+  await page.getByRole('button', { name: /Weiter/ }).click().catch(() => {});
+  await page.waitForSelector('.pk-lesson');
+  await shot('poker-lesson');
+  ok(true, 'Poker: Lektion');
+};
 games.karten = async () => {
   await page.locator('.gh-box[data-game="karten"]').click();
   await page.waitForSelector('.kt-variants');

@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { RANKS, SUITS, isRed, rankOf, suitOf } from './cards';
+import { RANKS, RANKS_EN, SUITS, isRed, rankOf, suitOf } from './cards';
 
 // Pip-Positionen (x: 0–2 Spalten, y: 0–6 Reihen) je Rang
 const PIPS: Record<number, [number, number][]> = {
@@ -34,10 +34,10 @@ function suitClass(id: number, four: boolean) {
   return ['blk', 'red', 'blu', 'grn'][s];
 }
 
-function Face({ id, w, fourColor, large }: { id: number; w: number; fourColor: boolean; large: boolean }) {
+function Face({ id, w, fourColor, large, english }: { id: number; w: number; fourColor: boolean; large: boolean; english?: boolean }) {
   const r = rankOf(id), s = suitOf(id), n = r + 1;
   const cls = suitClass(id, fourColor);
-  const label = RANKS[r];
+  const label = (english ? RANKS_EN : RANKS)[r];
   return (
     <div className={'kc-face ' + cls + (large ? ' large' : '')} style={{ fontSize: w * 0.2 }}>
       <span className="kc-corner tl"><b>{label}</b><i>{SUITS[s]}</i></span>
@@ -58,10 +58,10 @@ function Face({ id, w, fourColor, large }: { id: number; w: number; fourColor: b
   );
 }
 
-function Impl({ id, up, w, fourColor, large, back, selected, hint, dim }: CardViewProps) {
+function Impl({ id, up, w, fourColor, large, back, selected, hint, dim, english }: CardViewProps) {
   return (
     <div className={'kc' + (up ? ' up' : ' down') + (selected ? ' sel' : '') + (hint ? ' hint' : '') + (dim ? ' dim' : '')} style={{ width: w, height: Math.round(w * 1.42) }}>
-      {up ? <Face id={id} w={w} fourColor={fourColor} large={large} /> : <div className={'kc-back b-' + back} />}
+      {up ? <Face id={id} w={w} fourColor={fourColor} large={large} english={english} /> : <div className={'kc-back b-' + back} />}
     </div>
   );
 }
