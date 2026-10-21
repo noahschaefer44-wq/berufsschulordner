@@ -248,3 +248,24 @@ export function KalahaCover() {
     </Frame>
   );
 }
+
+export function KniffelCover() {
+  const pips: Record<number, [number, number][]> = { 5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]], 6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]], 1: [[0, 0]] };
+  const die = (x: number, y: number, v: number, rot: number) => (
+    <g transform={`translate(${x} ${y}) rotate(${rot})`}><rect x="-17" y="-17" width="34" height="34" rx="6" fill="#f3ead3" stroke="#b9aa84" strokeWidth="1.2" /><rect x="-15" y="-15" width="30" height="15" rx="5" fill="#fff" opacity=".4" />
+      {pips[v].map(([a, b], i) => <circle key={i} cx={a * 8} cy={b * 8} r="3.1" fill="#1d140c" />)}</g>
+  );
+  return (
+    <Frame bg="#2a1a0f">
+      <defs><radialGradient id="knc" cx="50%" cy="20%" r="80%"><stop offset="0" stopColor="#6a3d1c" /><stop offset="1" stopColor="#1c1008" /></radialGradient></defs>
+      <rect width="120" height="160" fill="url(#knc)" />
+      <path d="M0 40H120M0 80H120M0 120H120" stroke="rgba(0,0,0,.25)" strokeWidth="1" />
+      <rect x="10" y="86" width="100" height="62" rx="2" fill="#fbf5e4" transform="rotate(-2 60 117)" />
+      <g stroke="rgba(80,110,170,.4)">{[100, 110, 120, 130, 140].map((y) => <line key={y} x1="14" y1={y} x2="106" y2={y} transform="rotate(-2 60 117)" />)}</g>
+      <text x="22" y="100" fontSize="9" fontFamily="'Alfa Slab One',serif" fill="#c4301f" transform="rotate(-2 60 117)">KNIFFEL</text>
+      <text x="62" y="136" fontSize="22" fontFamily="'Caveat',cursive" fontWeight="700" fill="#1a3a8a" transform="rotate(-6 70 130)">50!</text>
+      {die(30, 42, 5, -12)}{die(60, 30, 5, 8)}{die(90, 44, 5, -6)}{die(44, 66, 5, 14)}{die(78, 70, 5, -16)}
+      <text x="60" y="15" textAnchor="middle" fontSize="8" fontFamily="'Special Elite',monospace" fill="#f0b440" letterSpacing="2">WÜRFELN · HALTEN</text>
+    </Frame>
+  );
+}

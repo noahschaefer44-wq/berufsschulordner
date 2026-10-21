@@ -446,6 +446,45 @@ games.kalaha = async () => {
   await page.waitForSelector('.kl-pit.hint');
   ok(true, 'Kalaha: Aufgabe mit Lösung');
 };
+games.kniffel = async () => {
+  await page.locator('.gh-box[data-game="kniffel"]').click();
+  await page.waitForSelector('.kn-setup');
+  await shot('kn-menu');
+  await page.getByRole('button', { name: 'Spiel beginnen' }).click();
+  await page.waitForSelector('.kn-sheet');
+  await page.getByRole('button', { name: /Würfeln/ }).first().click();
+  await page.waitForFunction(() => /übrig/.test(document.querySelector('.kn-cup small')?.textContent ?? '') && document.querySelectorAll('.kn-die.rolling').length === 0 && /2 von 3/.test(document.querySelector('.kn-cup small')?.textContent ?? ''), null, { timeout: 8000 });
+  ok(true, 'Kniffel: Wurf');
+  await page.locator('.kn-tray .kn-die').nth(0).click();
+  await page.locator('.kn-tray .kn-die').nth(1).click();
+  await page.waitForSelector('.kn-die.held');
+  await page.getByRole('button', { name: /Nochmal würfeln/ }).click();
+  await page.waitForFunction(() => /1 von 3/.test(document.querySelector('.kn-cup small')?.textContent ?? ''), null, { timeout: 8000 });
+  ok(true, 'Kniffel: Halten und zweiter Wurf');
+  await page.getByRole('button', { name: 'Chancen' }).click();
+  await page.waitForSelector('.kn-odds li', { timeout: 10000 });
+  ok(true, 'Kniffel: Chancen-Tabelle');
+  await shot('kn-play');
+  await page.locator('.kn-sheet td.can').first().click();
+  await page.waitForFunction(() => document.querySelectorAll('.kn-pl')[1]?.classList.contains('on'), null, { timeout: 8000 });
+  ok(true, 'Kniffel: Eintrag und Gegner am Zug');
+  await page.waitForFunction(() => document.querySelectorAll('.kn-pl')[0]?.classList.contains('on'), null, { timeout: 40000 });
+  ok(true, 'Kniffel: KI hat gespielt');
+  await page.getByRole('button', { name: 'Abbrechen' }).click();
+  await page.locator('.kn-tile', { hasText: 'Lernen' }).click();
+  await page.waitForSelector('.kn-lesson');
+  await page.locator('.kn-tray .kn-die').nth(0).click();
+  await page.locator('.kn-tray .kn-die').nth(2).click();
+  await page.getByRole('button', { name: 'Prüfen' }).click();
+  await page.waitForSelector('.kn-res.ok');
+  await shot('kn-lesson');
+  ok(true, 'Kniffel: Lektion 1');
+  await page.getByRole('button', { name: 'Aufgaben' }).click();
+  await page.waitForSelector('.kn-puzzles');
+  await page.waitForSelector('.kn-sheet', { timeout: 30000 });
+  await shot('kn-puzzle');
+  ok(true, 'Kniffel: Aufgabe erscheint');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${String(e.message).split('\n')[0]}`); await shot('FAIL-' + name); }
