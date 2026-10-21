@@ -21,131 +21,7 @@ ok(true, 'Spielhalle öffnet über Speicher-Tipp');
 await shot('hall');
 
 const only = (process.env.E2E_ONLY ?? '').split(',').filter(Boolean);
-const games = {
-  async minen() {
-    await page.locator('.gh-box[data-game="minen"]').click();
-    await page.waitForSelector('.mn-canvas');
-    const cv = page.locator('.mn-canvas');
-    const box = await cv.boundingBox();
-    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
-    await page.waitForTimeout(800);
-    await shot('minen');
-    ok((await page.locator('.mn-status').innerText()).length > 0, 'Minenfeld: Spiel läuft');
-    await page.locator('.mn-menu > button', { hasText: 'Hilfe' }).click();
-    await page.getByRole('menuitem', { name: /Lernen/ }).click();
-    await page.waitForSelector('.mn-lessons');
-    await shot('minen-lernen');
-    ok(true, 'Minenfeld: Lernstationen');
-    await page.getByRole('button', { name: 'Zum Spiel' }).click();
-    const menu = async (m, item) => { await page.locator('.mn-menu > button', { hasText: m }).click(); await page.getByRole('menuitem', { name: item }).click(); };
-    await menu('Brett', /Sechseck/);
-    const cv2 = page.locator('.mn-canvas');
-    const b2 = await cv2.boundingBox();
-    await page.mouse.click(b2.x + b2.width / 2, b2.y + b2.height / 2);
-    await page.waitForTimeout(1500);
-    await page.mouse.click(b2.x + 40, b2.y + 40, { button: 'right' });
-    await shot('minen-hex');
-    await menu('Brett', /Torus/);
-    await menu('Modus', /Training/);
-    const b3 = await page.locator('.mn-canvas').boundingBox();
-    await page.mouse.click(b3.x + b3.width / 2, b3.y + b3.height / 2);
-    await page.waitForTimeout(1500);
-    await page.getByRole('button', { name: /Wahrscheinlichkeit/ }).click();
-    await page.getByRole('button', { name: /Hinweis/ }).click();
-    await shot('minen-training');
-    ok((await page.locator('.mn-hint').count()) > 0, 'Minenfeld: Hinweis im Training');
-  },
-};
-games.sudoku = async () => {
-  await page.locator('.gh-box[data-game="sudoku"]').click();
-  await page.waitForSelector('.sd-panel');
-  await page.getByRole('radio', { name: 'Leicht' }).click();
-  await page.getByRole('button', { name: 'Rätsel setzen' }).click();
-  await page.waitForSelector('.sd-board');
-  await page.waitForTimeout(500);
-  const empty = page.locator('.sd-cell:not(.given)').first();
-  await empty.click();
-  await page.keyboard.press('Digit5');
-  await page.getByRole('button', { name: /Hinweis/ }).click();
-  await shot('sudoku');
-  ok((await page.locator('.sd-hint').count()) > 0, 'Sudoku: Hinweis');
-  await page.getByRole('button', { name: 'Neu', exact: true }).click();
-  await page.locator('.sd-variants button', { hasText: 'Killer' }).click();
-  await page.getByRole('radio', { name: 'Mittel' }).click();
-  await page.getByRole('button', { name: 'Rätsel setzen' }).click();
-  await page.waitForSelector('.sd-cage', { state: 'attached' });
-  await shot('sudoku-killer');
-  ok(true, 'Sudoku: Killer mit Käfigen');
-  await page.getByRole('button', { name: 'Schule' }).click();
-  await page.locator('.sd-lessons button').first().click();
-  await page.waitForSelector('.sd-task');
-  await shot('sudoku-schule');
-  ok(true, 'Sudoku: Schule mit Übung');
-  await page.getByRole('button', { name: 'Zum Rätsel' }).click();
-  await page.getByRole('button', { name: 'Eigenes' }).click();
-  await page.waitForSelector('.sd-board');
-  await page.getByRole('button', { name: 'Prüfen' }).click();
-  ok(true, 'Sudoku: Editor');
-};
-games.bild = async () => {
-  await page.locator('.gh-box[data-game="bild"]').click();
-  await page.waitForSelector('.bd-menu');
-  await page.getByRole('tab', { name: 'Zufall' }).click();
-  await page.getByRole('button', { name: '10×10' }).click();
-  await page.getByRole('button', { name: 'Würfeln' }).click();
-  await page.waitForSelector('.bd-canvas');
-  const cv = page.locator('.bd-canvas');
-  const b = await cv.boundingBox();
-  await page.mouse.click(b.x + b.width - 40, b.y + b.height - 40);
-  await page.getByRole('button', { name: /Hinweis/ }).click();
-  await page.waitForTimeout(300);
-  await shot('bild');
-  ok((await page.locator('.bd-hint').count()) > 0, 'Bildrätsel: Hinweis');
-  await page.getByRole('button', { name: 'Lösungsweg' }).click();
-  await page.waitForSelector('.bd-hint');
-  await page.getByRole('button', { name: 'Automatisch' }).click();
-  await page.waitForTimeout(1200);
-  await shot('bild-logik');
-  ok(true, 'Bildrätsel: Lösungsweg');
-  await page.getByRole('button', { name: 'Zeichnen' }).click();
-  await page.waitForSelector('.bd-editor');
-  const eb = await page.locator('.bd-canvas').boundingBox();
-  await page.mouse.move(eb.x + 40, eb.y + 40); await page.mouse.down(); await page.mouse.move(eb.x + 200, eb.y + 40); await page.mouse.up();
-  await page.mouse.move(eb.x + 40, eb.y + 100); await page.mouse.down(); await page.mouse.move(eb.x + 160, eb.y + 160); await page.mouse.up();
-  await page.getByRole('button', { name: 'Prüfen' }).click();
-  await shot('bild-editor');
-  ok((await page.locator('.bd-hint').count()) > 0, 'Bildrätsel: Editor prüft');
-};
-games.lager = async () => {
-  await page.locator('.gh-box[data-game="lager"]').click();
-  await page.waitForSelector('.lg-levels');
-  await page.locator('.lg-levels button').first().click();
-  await page.waitForSelector('.lg-canvas');
-  await page.keyboard.press('ArrowRight');
-  await page.keyboard.press('ArrowRight');
-  await page.waitForSelector('.lg-modal');
-  await shot('lager-solved');
-  ok(true, 'Lagerhaus: Einführungslevel gelöst');
-  await page.getByRole('button', { name: /Nächstes Level/ }).click();
-  await page.waitForSelector('.lg-canvas');
-  await page.getByRole('button', { name: /Hinweis/ }).click();
-  await page.waitForTimeout(500);
-  await shot('lager-hint');
-  await page.getByRole('button', { name: 'Level', exact: true }).click();
-  await page.getByRole('tab', { name: /Pakete/ }).click();
-  await page.locator('.lg-pack').nth(1).locator('.lg-levels button').first().click();
-  await page.waitForSelector('.lg-canvas', { timeout: 20000 });
-  await page.getByRole('button', { name: /Hinweis/ }).click();
-  await page.waitForTimeout(800);
-  await shot('lager-p1');
-  ok(true, 'Lagerhaus: Paketlevel erzeugt');
-  await page.getByRole('button', { name: 'Editor' }).click();
-  await page.waitForSelector('.lg-editor');
-  await page.getByRole('button', { name: 'Prüfen' }).click();
-  await page.waitForTimeout(500);
-  await shot('lager-editor');
-  ok((await page.locator('.lg-note').count()) > 0, 'Lagerhaus: Editor prüft');
-};
+const games = {};
 games.block = async () => {
   await page.locator('.gh-box[data-game="block"]').click();
   await page.waitForSelector('.bk-modes');
@@ -177,6 +53,52 @@ games.block = async () => {
   await page.getByRole('button', { name: 'Einstellungen' }).click();
   await page.waitForSelector('.bk-settings');
   ok(true, 'Blockfall: Einstellungen');
+};
+games.gammon = async () => {
+  await page.locator('.gh-box[data-game="gammon"]').click();
+  await page.waitForSelector('.gm-setup');
+  await shot('gammon-menu');
+  await page.locator('.gm-setup .gm-seg button[title="Anfänger"]').click();
+  await page.getByRole('button', { name: 'Spiel beginnen' }).click();
+  await page.waitForSelector('.bgv');
+  // einige Züge mit Tipp spielen lassen
+  let turns = 0;
+  for (let i = 0; i < 60 && turns < 4; i++) {
+    await page.waitForTimeout(900);
+    const roll = page.getByRole('button', { name: /^Würfeln/ });
+    if (await roll.count()) { await roll.first().click(); await page.waitForTimeout(500); }
+    const tip = page.getByRole('button', { name: /^Tipp/, exact: false }).filter({ hasNotText: 'spielen' });
+    if (await tip.count() && await tip.first().isEnabled()) {
+      await tip.first().click();
+      const play = page.getByRole('button', { name: 'Tipp spielen' });
+      try { await play.waitFor({ timeout: 15000 }); await play.click(); turns++; } catch { /* kein Zug */ }
+    }
+  }
+  await shot('gammon-play');
+  ok(turns >= 2, 'Backgammon: Züge mit Tipp gespielt (' + turns + ')');
+  const log = await page.locator('.gm-log li').count();
+  ok(log >= 3, 'Backgammon: Zugliste hat ' + log + ' Einträge');
+  await page.getByRole('button', { name: 'Aufgeben' }).click();
+  await page.waitForSelector('.gm-modal');
+  ok(true, 'Backgammon: Spielende');
+  await page.getByRole('button', { name: 'Menü' }).last().click();
+  await page.locator('.gm-tile', { hasText: 'Lernen' }).click();
+  await page.locator('.gm-lessons .gm-card').nth(1).click();
+  await page.getByRole('button', { name: /Weiter/ }).click();
+  await page.waitForSelector('.gm-task');
+  await shot('gammon-lesson');
+  ok(true, 'Backgammon: Lektion mit Aufgabe');
+  await page.getByRole('button', { name: /Lektionen/ }).click();
+  await page.getByRole('button', { name: /Menü/ }).first().click();
+  await page.locator('.gm-tile', { hasText: 'Eröffnungsbuch' }).click();
+  await page.waitForSelector('.gm-rolls');
+  await shot('gammon-openings');
+  ok(true, 'Backgammon: Eröffnungsbuch');
+  await page.getByRole('button', { name: /Menü/ }).first().click();
+  await page.locator('.gm-tile', { hasText: 'Zug-Rätsel' }).click();
+  await page.waitForSelector('.gm-task', { timeout: 30000 });
+  await shot('gammon-puzzle');
+  ok(true, 'Backgammon: Zug-Rätsel');
 };
 games.karten = async () => {
   await page.locator('.gh-box[data-game="karten"]').click();

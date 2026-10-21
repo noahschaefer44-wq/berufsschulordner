@@ -9,12 +9,9 @@ export interface GameMeta {
 }
 
 export const GAMES: GameMeta[] = [
-  { id: 'minen', name: 'Minenfeld', tagline: 'Räume das Feld, ohne zu raten.', genre: 'Logik' },
-  { id: 'sudoku', name: 'Rätselheft', tagline: 'Sudoku in sieben Varianten, mit Technik-Schule.', genre: 'Logik' },
-  { id: 'bild', name: 'Bildrätsel', tagline: 'Nonogramme lösen, zeichnen, aus Fotos machen.', genre: 'Logik' },
-  { id: 'lager', name: 'Lagerhaus', tagline: 'Kisten schieben – mit Editor und Löser.', genre: 'Denken' },
   { id: 'block', name: 'Blockfall', tagline: 'Fallende Steine, vom Anfänger bis zum Duell.', genre: 'Arcade' },
   { id: 'karten', name: 'Patience', tagline: 'Klondike, FreeCell, Spider, Pyramide, TriPeaks.', genre: 'Karten' },
+  { id: 'gammon', name: 'Backgammon', tagline: 'Würfel, Doppelwürfel und Match – mit Coach und Eröffnungsbuch.', genre: 'Brettspiel' },
   { id: 'go', name: 'Go', tagline: 'Das Brettspiel der Steine – lernen, spielen, meistern.', genre: 'Brettspiel' },
 ];
 

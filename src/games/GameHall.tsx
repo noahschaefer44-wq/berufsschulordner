@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useRef, useState, type ComponentType } from 
 import '@fontsource/dm-serif-display';
 import '@fontsource/dm-sans/400.css';
 import '@fontsource/dm-sans/700.css';
-import { BildCover, BlockCover, GoCover, KartenCover, LagerCover, MinenCover, SudokuCover } from './Covers';
+import { BlockCover, GammonCover, GoCover, KartenCover } from './Covers';
 import { ACHIEVEMENTS, GAMES, SECRETS } from './shared/meta';
 import { dailyDone, dailyStreak, fmtTime, hallReplace, hallReset, toast, useHall, hallData, hallUpdate } from './shared/store';
 import { sfx } from './shared/sfx';
@@ -11,18 +11,15 @@ import './hall.css';
 export interface GameProps { onExit: () => void; daily?: boolean }
 
 const LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> }>> = {
-  minen: () => import('./minen/MinenGame'),
-  sudoku: () => import('./sudoku/SudokuGame'),
-  bild: () => import('./bild/BildGame'),
-  lager: () => import('./lager/LagerGame'),
   block: () => import('./block/BlockGame'),
   karten: () => import('./karten/KartenGame'),
   go: () => import('./go/GoGame'),
+  gammon: () => import('./gammon/GammonGame'),
 };
 const LAZY: Record<string, ComponentType<GameProps>> = Object.fromEntries(Object.entries(LOADERS).map(([k, f]) => [k, lazy(f)]));
 
-const COVERS: Record<string, () => React.ReactElement> = { minen: MinenCover, sudoku: SudokuCover, bild: BildCover, lager: LagerCover, block: BlockCover, karten: KartenCover, go: GoCover };
-const DAILY = ['minen', 'sudoku', 'bild', 'lager', 'go'];
+const COVERS: Record<string, () => React.ReactElement> = { block: BlockCover, karten: KartenCover, go: GoCover, gammon: GammonCover };
+const DAILY = ['go', 'gammon'];
 const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
 type View = 'regal' | 'erfolge' | 'geheimnisse' | 'optionen';
@@ -87,7 +84,7 @@ export default function GameHall() {
       <header className="gh-top">
         <div>
           <h1>Spielhalle</h1>
-          <p>Sieben klassische Spiele – lokal gespeichert, kein Konto.</p>
+          <p>{GAMES.length} Spiele – lokal gespeichert, kein Konto.</p>
         </div>
         <nav className="gh-tabs" aria-label="Bereiche">
           {([['regal', 'Regal'], ['erfolge', `Erfolge ${unlocked}/${Math.max(ACHIEVEMENTS.length, unlocked)}`], ['geheimnisse', 'Geheimnisse'], ['optionen', 'Optionen']] as [View, string][]).map(([v, l]) => (
