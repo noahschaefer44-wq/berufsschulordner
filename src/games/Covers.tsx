@@ -151,3 +151,26 @@ export function SnakeCover() {
     </Frame>
   );
 }
+
+export function MauerCover() {
+  const cells: React.ReactNode[] = [];
+  for (let r = 0; r < 5; r++) for (let c = 0; c < 5; c++) cells.push(<rect key={`${r}${c}`} x={14 + c * 18.4} y={22 + r * 18.4} width="15" height="15" fill="#164486" stroke="rgba(205,225,255,.55)" strokeWidth=".6" />);
+  return (
+    <Frame bg="#0f2f66">
+      <defs><pattern id="mg" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M8 0H0V8" fill="none" stroke="rgba(190,215,255,.1)" strokeWidth=".5" /></pattern></defs>
+      <rect width="120" height="160" fill="url(#mg)" />
+      <text x="60" y="14" textAnchor="middle" fontSize="8" fontFamily="'Barlow Condensed',sans-serif" fontWeight="700" letterSpacing="1.6" fill="#e7f0ff">MAUERBAU</text>
+      {cells}
+      <rect x="14" y="58.8" width="33" height="3.4" fill="#f4f1e6" stroke="#bdb9a6" strokeWidth=".4" />
+      <rect x="51.8" y="77.2" width="33" height="3.4" fill="#ff8a3d" stroke="#b9560f" strokeWidth=".4" />
+      <rect x="69.8" y="22" width="3.4" height="33" fill="#f4f1e6" stroke="#bdb9a6" strokeWidth=".4" />
+      <rect x="33" y="40.4" width="3.4" height="33" fill="#ff8a3d" stroke="#b9560f" strokeWidth=".4" />
+      <circle cx="60.7" cy="29.5" r="6" fill="#ff8a3d" stroke="#b9560f" strokeWidth="1.2" />
+      <circle cx="42.3" cy="103" r="6" fill="#f4f1e6" stroke="#bdb9a6" strokeWidth="1.2" />
+      <path d="M42.3 97 V84 H60.7 V35.5" fill="none" stroke="#f4f1e6" strokeWidth="1" strokeDasharray="1.5 3" strokeLinecap="round" />
+      <rect x="64" y="128" width="46" height="22" fill="none" stroke="#e7f0ff" strokeWidth="1" />
+      <text x="68" y="138" fontSize="5" fontFamily="'Courier Prime',monospace" fill="#9db8e6">Zeichnung Nr. 9</text>
+      <text x="68" y="146" fontSize="5" fontFamily="'Architects Daughter',cursive" fill="#e7f0ff">Maßstab 1:1</text>
+    </Frame>
+  );
+}

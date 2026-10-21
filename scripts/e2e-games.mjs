@@ -297,6 +297,46 @@ games.go = async () => {
   await page.waitForSelector('.go-pulse');
   ok(true, 'Go: Lösung wird angezeigt');
 };
+games.mauer = async () => {
+  await page.locator('.gh-box[data-game="mauer"]').click();
+  await page.waitForSelector('.mb-setup');
+  await shot('mauer-menu');
+  await page.locator('.mb-seg button', { hasText: /^7×7$|^Mittel$|^7$/ }).first().click().catch(() => {});
+  await page.getByRole('button', { name: 'Partie beginnen' }).click();
+  await page.waitForSelector('.mb-board.act');
+  await page.locator('.mb-target rect').first().click({ force: true });
+  await page.waitForFunction(() => document.querySelectorAll('.mb-moves li .mv').length >= 2, null, { timeout: 15000 });
+  ok(true, 'Mauerbau: Zug und KI-Antwort');
+  // Mauer per Mauer-Modus
+  await page.getByRole('button', { name: 'Mauer-Modus' }).click();
+  const box = await page.locator('.mb-board').boundingBox();
+  await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.38);
+  await page.mouse.click(box.x + box.width * 0.5, box.y + box.height * 0.38);
+  await page.waitForFunction(() => document.querySelectorAll('.mb-wall.p0').length >= 1, null, { timeout: 5000 });
+  ok(true, 'Mauerbau: Mauer gesetzt');
+  await page.waitForFunction(() => document.querySelectorAll('.mb-moves li .mv').length >= 4, null, { timeout: 15000 });
+  await shot('mauer-play');
+  await page.getByRole('button', { name: 'Tipp' }).click();
+  await page.waitForSelector('.mb-hint');
+  ok(true, 'Mauerbau: Tipp');
+  await page.getByRole('button', { name: 'Zurück', exact: true }).click();
+  await page.waitForFunction(() => document.querySelectorAll('.mb-moves li .mv').length <= 2, null, { timeout: 5000 });
+  ok(true, 'Mauerbau: Zug zurück');
+  await page.getByRole('button', { name: 'Aufgeben' }).click();
+  await page.locator('.mb-tile', { hasText: 'Lernen' }).click();
+  await page.waitForSelector('.mb-lesson');
+  await page.locator('.mb-target rect').first().click({ force: true });
+  await page.waitForSelector('.mb-res.ok');
+  await shot('mauer-lesson');
+  ok(true, 'Mauerbau: Lektion 1');
+  await page.getByRole('button', { name: 'Aufgaben' }).click();
+  await page.waitForSelector('.mb-puzzles');
+  await page.locator('.mb-seg button', { hasText: 'Wer gewinnt?' }).click();
+  await page.getByRole('button', { name: 'Weiß gewinnt' }).click();
+  await page.waitForSelector('.mb-res');
+  await shot('mauer-puzzle');
+  ok(true, 'Mauerbau: Aufgabe beantwortet');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${e.message.split('\n')[0]}`); }

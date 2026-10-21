@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useRef, useState, type ComponentType } from 
 import '@fontsource/dm-serif-display';
 import '@fontsource/dm-sans/400.css';
 import '@fontsource/dm-sans/700.css';
-import { BlockCover, GammonCover, GoCover, KartenCover, PokerCover, SchiffCover, CodeCover, SnakeCover } from './Covers';
+import { MauerCover, BlockCover, GammonCover, GoCover, KartenCover, PokerCover, SchiffCover, CodeCover, SnakeCover } from './Covers';
 import { ACHIEVEMENTS, GAMES, SECRETS } from './shared/meta';
 import { dailyDone, dailyStreak, fmtTime, hallReplace, hallReset, toast, useHall, hallData, hallUpdate } from './shared/store';
 import { sfx } from './shared/sfx';
@@ -11,6 +11,7 @@ import './hall.css';
 export interface GameProps { onExit: () => void; daily?: boolean }
 
 const LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> }>> = {
+  mauer: () => import('./mauer/MauerGame'),
   block: () => import('./block/BlockGame'),
   karten: () => import('./karten/KartenGame'),
   go: () => import('./go/GoGame'),
@@ -22,8 +23,8 @@ const LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> 
 };
 const LAZY: Record<string, ComponentType<GameProps>> = Object.fromEntries(Object.entries(LOADERS).map(([k, f]) => [k, lazy(f)]));
 
-const COVERS: Record<string, () => React.ReactElement> = { block: BlockCover, karten: KartenCover, go: GoCover, gammon: GammonCover, schiff: SchiffCover, poker: PokerCover, code: CodeCover, snake: SnakeCover };
-const DAILY = ['go', 'gammon', 'schiff', 'poker', 'code', 'snake'];
+const COVERS: Record<string, () => React.ReactElement> = { mauer: MauerCover, block: BlockCover, karten: KartenCover, go: GoCover, gammon: GammonCover, schiff: SchiffCover, poker: PokerCover, code: CodeCover, snake: SnakeCover };
+const DAILY = ['mauer', 'go', 'gammon', 'schiff', 'poker', 'code', 'snake'];
 const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
 type View = 'regal' | 'erfolge' | 'geheimnisse' | 'optionen';
