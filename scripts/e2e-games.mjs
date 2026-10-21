@@ -163,6 +163,65 @@ games.poker = async () => {
   await shot('poker-lesson');
   ok(true, 'Poker: Lektion');
 };
+games.code = async () => {
+  await page.locator('.gh-box[data-game="code"]').click();
+  await page.waitForSelector('.cd-setup');
+  await shot('code-menu');
+  await page.getByRole('button', { name: /Los geht/ }).click();
+  await page.waitForSelector('.cd-board');
+  for (let r = 0; r < 3; r++) {
+    for (let k = 0; k < 4; k++) await page.locator('.cd-input .cd-palette .cd-peg').nth((k + r) % 6).click();
+    await page.getByRole('button', { name: /^Prüfen/ }).click();
+    await page.waitForTimeout(250);
+  }
+  await shot('code-play');
+  ok((await page.locator('.cd-row.done').count()) === 3, 'Code-Knacker: drei Versuche ausgewertet');
+  await page.getByRole('button', { name: 'Tipp' }).click();
+  await page.getByRole('button', { name: /^Prüfen/ }).click();
+  await page.waitForTimeout(300);
+  ok((await page.locator('.cd-row.done').count()) === 4, 'Code-Knacker: Tipp spielt einen Versuch');
+  await page.getByRole('button', { name: 'Spiel beenden' }).click();
+  await page.locator('.cd-seg button', { hasText: 'Verstecken' }).click();
+  await page.getByRole('button', { name: /Los geht/ }).click();
+  await page.waitForSelector('.cd-set');
+  await page.getByRole('button', { name: 'Zufällig' }).click();
+  await page.getByRole('button', { name: 'Fertig' }).click();
+  await page.waitForSelector('.cd-row.done', { timeout: 20000 });
+  await shot('code-hide');
+  ok(true, 'Code-Knacker: KI knackt deinen Code');
+  await page.getByRole('button', { name: 'Spiel beenden' }).click();
+  await page.locator('.cd-tile', { hasText: 'Lernen' }).click();
+  await page.waitForSelector('.cd-eli');
+  await shot('code-learn');
+  ok(true, 'Code-Knacker: Lernen mit Übung');
+};
+games.snake = async () => {
+  await page.locator('.gh-box[data-game="snake"]').click();
+  await page.waitForSelector('.sn-setup');
+  await shot('snake-menu');
+  await page.locator('.sn-modes button', { hasText: 'Torus' }).click();
+  await page.locator('.sn-start').click();
+  await page.waitForSelector('.sn-canvas');
+  await page.getByRole('button', { name: 'Start' }).click();
+  for (const k of ['ArrowDown', 'ArrowRight', 'ArrowUp', 'ArrowLeft']) { await page.keyboard.press(k); await page.waitForTimeout(500); }
+  await shot('snake-play');
+  const pts = await page.locator('.sn-hud b').first().innerText();
+  ok(pts !== undefined, 'Schlange: läuft im Torus (Punkte ' + pts + ')');
+  await page.keyboard.press('Space');
+  ok(await page.getByText('Pause').first().isVisible(), 'Schlange: Pause');
+  await page.getByRole('button', { name: 'Beenden' }).click();
+  await page.locator('.sn-tile', { hasText: 'Kampagne' }).click();
+  await page.waitForSelector('.sn-levels');
+  await shot('snake-campaign');
+  ok((await page.locator('.sn-levels li').count()) === 12, 'Schlange: zwölf Level');
+  await page.getByRole('button', { name: /Menü/ }).first().click();
+  await page.locator('.sn-tile', { hasText: 'Eigene Level' }).click();
+  await page.getByRole('button', { name: 'Neues Level bauen' }).click();
+  await page.waitForSelector('.sn-editor');
+  await page.getByRole('button', { name: 'Rahmen' }).click();
+  await shot('snake-editor');
+  ok(await page.getByText(/Spielbar/).isVisible(), 'Schlange: Editor prüft Spielbarkeit');
+};
 games.karten = async () => {
   await page.locator('.gh-box[data-game="karten"]').click();
   await page.waitForSelector('.kt-variants');

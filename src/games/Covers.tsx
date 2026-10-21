@@ -117,3 +117,37 @@ export function PokerCover() {
     </Frame>
   );
 }
+
+export function CodeCover() {
+  const peg = (x: number, y: number, c1: string, c2: string, k: string) => <g key={k}><circle cx={x + .8} cy={y + 1.4} r="8" fill="rgba(0,0,0,.3)" /><circle cx={x} cy={y} r="8" fill={c2} /><circle cx={x - 2} cy={y - 2.5} r="5" fill={c1} opacity=".85" /></g>;
+  const rows: [string, string][][] = [[['#ff7a6b', '#c4271a'], ['#7fb0ff', '#1f55c4'], ['#ffe27a', '#d19a0e'], ['#7fdc8c', '#1f8a3a']], [['#7fdc8c', '#1f8a3a'], ['#7fdc8c', '#1f8a3a'], ['#c79bff', '#6a35b8'], ['#ff7a6b', '#c4271a']]];
+  return (
+    <Frame bg="#e7e3d8">
+      <rect x="10" y="26" width="100" height="108" rx="10" fill="#f4f1e8" stroke="#c8c3b4" />
+      <rect x="16" y="32" width="88" height="16" rx="5" fill="#1c1b19" />
+      <text x="22" y="44" fontSize="9" fontFamily="'IBM Plex Mono',monospace" fontWeight="700" fill="#ff8a3d" letterSpacing="2">? ? ? ?</text>
+      {rows.map((r, i) => <g key={i}>{r.map(([a, b], j) => peg(28 + j * 18, 66 + i * 26, a, b, `${i}${j}`))}{[0, 1, 2, 3].map((k) => <circle key={k} cx={104 - (k % 2) * 6} cy={60 + i * 26 + Math.floor(k / 2) * 6} r="2.2" fill={k < 2 - i ? '#1a1a18' : k < 3 ? '#fafaf5' : '#cfcabb'} stroke="#55524a" strokeWidth=".5" />)}</g>)}
+      <g>{[0, 1, 2, 3].map((j) => <circle key={j} cx={28 + j * 18} cy={118} r="7.5" fill="#d9d4c6" stroke="#b7b2a2" />)}</g>
+      <circle cx="104" cy="34" r="3.2" fill="#ff6a13" />
+      <text x="60" y="17" textAnchor="middle" fontSize="10" fontFamily="'IBM Plex Mono',monospace" fontWeight="700" fill="#2a2a27">CODE-KNACKER</text>
+      <text x="60" y="150" textAnchor="middle" fontSize="8" fontFamily="'IBM Plex Sans',sans-serif" fill="#77746a">Mastermind · Bullen &amp; Kühe</text>
+    </Frame>
+  );
+}
+
+export function SnakeCover() {
+  const cells = [[3, 4], [4, 4], [5, 4], [6, 4], [6, 5], [6, 6], [5, 6], [4, 6], [4, 7], [4, 8]];
+  const sq = (x: number, y: number, k: string, head = false) => <rect key={k} x={16 + x * 11} y={38 + y * 11} width="9.6" height="9.6" fill={head ? '#18220f' : '#26331d'} />;
+  return (
+    <Frame bg="#223e6e">
+      <rect x="8" y="24" width="104" height="112" rx="14" fill="#34588f" />
+      <rect x="16" y="32" width="88" height="86" fill="#b9c99b" stroke="#0e1a12" strokeWidth="3" />
+      {cells.map(([x, y], i) => sq(x, y, `c${i}`, i === cells.length - 1))}
+      <rect x="85" y="49" width="8" height="8" fill="#26331d" /><rect x="88" y="46" width="2" height="3" fill="#26331d" />
+      <rect x="38" y="108" width="44" height="12" rx="6" fill="#7d92b8" opacity="0" />
+      <rect x="40" y="123" width="40" height="8" rx="4" fill="#7d92b8" />
+      <text x="60" y="17" textAnchor="middle" fontSize="13" fontFamily="'Silkscreen',monospace" fontWeight="700" letterSpacing="1.5" fill="#c8e07a">SCHLANGE</text>
+      <text x="60" y="150" textAnchor="middle" fontSize="7.5" fontFamily="'IBM Plex Mono',monospace" fill="#9fb8ae">Kampagne · Duell · Editor</text>
+    </Frame>
+  );
+}
