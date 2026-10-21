@@ -11,6 +11,7 @@ export interface GameMeta {
 export const GAMES: GameMeta[] = [
   { id: 'block', name: 'Blockfall', tagline: 'Fallende Steine, vom Anfänger bis zum Duell.', genre: 'Arcade' },
   { id: 'karten', name: 'Patience', tagline: 'Klondike, FreeCell, Spider, Pyramide, TriPeaks.', genre: 'Karten' },
+  { id: 'schiff', name: 'Seeschlacht', tagline: 'Schiffe versenken: Salven, Nebel, Radar – mit Kampagne.', genre: 'Strategie' },
   { id: 'gammon', name: 'Backgammon', tagline: 'Würfel, Doppelwürfel und Match – mit Coach und Eröffnungsbuch.', genre: 'Brettspiel' },
   { id: 'go', name: 'Go', tagline: 'Das Brettspiel der Steine – lernen, spielen, meistern.', genre: 'Brettspiel' },
 ];

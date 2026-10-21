@@ -85,3 +85,21 @@ export function GammonCover() {
     </Frame>
   );
 }
+
+export function SchiffCover() {
+  const cells: React.ReactNode[] = [];
+  for (let i = 0; i < 8; i++) for (let j = 0; j < 8; j++) cells.push(<rect key={`${i}${j}`} x={14 + i * 11.5} y={34 + j * 11.5} width="11.5" height="11.5" fill="none" stroke="rgba(70,255,150,.28)" strokeWidth=".6" />);
+  return (
+    <Frame bg="#04110b">
+      <rect x="10" y="30" width="100" height="100" fill="#06261a" stroke="#46ff9c" strokeWidth="1.2" />
+      {cells}
+      <path d="M26 57 h34 l5 5.5 l-5 5.5 h-34 z" fill="#2f9a6a" stroke="#0d3a26" />
+      <path d="M71 82 h5 l0 28 l-5 0 z" fill="#2f9a6a" stroke="#0d3a26" />
+      <circle cx="37" cy="103" r="4" fill="none" stroke="#9fe8c4" strokeWidth="1.2" /><circle cx="86" cy="45" r="4" fill="none" stroke="#9fe8c4" strokeWidth="1.2" />
+      <g fill="#ff5a36"><circle cx="48" cy="62.5" r="3.8" /><circle cx="73.5" cy="90" r="3.8" /></g>
+      <path d="M60 80 L110 62" stroke="rgba(70,255,150,.55)" strokeWidth="3" />
+      <text x="60" y="19" textAnchor="middle" fontSize="12" fontFamily="'Share Tech Mono',monospace" fontWeight="700" letterSpacing="2" fill="#46ff9c">SEESCHLACHT</text>
+      <text x="60" y="148" textAnchor="middle" fontSize="8" fontFamily="'Share Tech Mono',monospace" fill="#7fb698">FLOTTENKOMMANDO</text>
+    </Frame>
+  );
+}

@@ -100,6 +100,37 @@ games.gammon = async () => {
   await shot('gammon-puzzle');
   ok(true, 'Backgammon: Zug-Rätsel');
 };
+games.schiff = async () => {
+  await page.locator('.gh-box[data-game="schiff"]').click();
+  await page.waitForSelector('.ss-setup');
+  await shot('schiff-menu');
+  await page.locator('.ss-setup .ss-seg button[title="Schiffsjunge"]').click();
+  await page.getByRole('button', { name: 'Gefecht beginnen' }).click();
+  await page.waitForSelector('.ss-place');
+  await page.getByRole('button', { name: 'Zufällig' }).click();
+  await shot('schiff-place');
+  await page.getByRole('button', { name: /Fertig/ }).click();
+  await page.waitForSelector('.ss-board2');
+  const g = page.locator('.ss-enemy .sg').first();
+  const box = await g.boundingBox();
+  const size = 10 * 40 + 30 + 6;
+  for (const [x, y] of [[3, 3], [6, 2], [1, 7], [8, 8], [5, 5]]) {
+    await page.mouse.click(box.x + box.width * ((30 + x * 40 + 20) / size), box.y + box.height * ((30 + y * 40 + 20) / size));
+    await page.waitForTimeout(2800);
+  }
+  await shot('schiff-battle');
+  const lines = await page.locator('.ss-log li').count();
+  ok(lines >= 8, 'Seeschlacht: Schüsse und KI-Antworten (' + lines + ' Zeilen)');
+  await page.getByRole('button', { name: /← Menü/ }).first().click();
+  await page.locator('.ss-tile', { hasText: 'Taktik' }).click();
+  await page.waitForSelector('.ss-task');
+  await shot('schiff-tactic');
+  ok(true, 'Seeschlacht: Taktik-Aufgabe');
+  await page.getByRole('button', { name: /Menü/ }).first().click();
+  await page.locator('.ss-tile', { hasText: 'Kampagne' }).click();
+  await page.waitForSelector('.ss-missions');
+  ok(true, 'Seeschlacht: Kampagne');
+};
 games.karten = async () => {
   await page.locator('.gh-box[data-game="karten"]').click();
   await page.waitForSelector('.kt-variants');
