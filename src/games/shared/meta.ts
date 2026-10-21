@@ -9,6 +9,7 @@ export interface GameMeta {
 }
 
 export const GAMES: GameMeta[] = [
+  { id: 'wikinger', name: 'Wikingerschach', tagline: 'Hnefatafl: König gegen Räuber – drei Bretter, KI, Skalde und Aufgaben.', genre: 'Brettspiel' },
   { id: 'mauer', name: 'Mauerbau', tagline: 'Wettlauf mit Mauern: Quoridor mit KI, Coach, Aufgaben und Labyrinth.', genre: 'Brettspiel' },
   { id: 'go', name: 'Go', tagline: 'Das Brettspiel der Steine – lernen, spielen, meistern.', genre: 'Brettspiel' },
   { id: 'gammon', name: 'Backgammon', tagline: 'Würfel, Doppelwürfel und Match – mit Coach und Eröffnungsbuch.', genre: 'Brettspiel' },

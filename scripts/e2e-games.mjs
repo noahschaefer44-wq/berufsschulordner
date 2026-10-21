@@ -337,6 +337,42 @@ games.mauer = async () => {
   await shot('mauer-puzzle');
   ok(true, 'Mauerbau: Aufgabe beantwortet');
 };
+games.wikinger = async () => {
+  await page.locator('.gh-box[data-game="wikinger"]').click();
+  await page.waitForSelector('.wk-setup');
+  await shot('wik-menu');
+  await page.getByRole('button', { name: 'Zum Kampf' }).click();
+  await page.waitForSelector('.wk-board');
+  await page.waitForFunction(() => document.querySelectorAll('.wk-moves .mv').length >= 1, null, { timeout: 20000 });
+  ok(true, 'Wikingerschach: KI zieht als Angreifer');
+  // Verteidiger auf (2,3) anwählen und ziehen
+  await page.locator('.wk-hit').nth(2 * 7 + 3).click();
+  await page.waitForSelector('.wk-target');
+  await page.locator('.wk-hit.t').first().click();
+  await page.waitForFunction(() => document.querySelectorAll('.wk-moves .mv').length >= 3, null, { timeout: 20000 });
+  await shot('wik-play');
+  ok(true, 'Wikingerschach: Zug und Antwort');
+  await page.getByRole('button', { name: 'Tipp' }).click();
+  await page.waitForSelector('.wk-hint');
+  ok(true, 'Wikingerschach: Tipp');
+  await page.getByRole('button', { name: 'Zurück', exact: true }).click();
+  await page.waitForFunction(() => document.querySelectorAll('.wk-moves .mv').length <= 1, null, { timeout: 5000 });
+  ok(true, 'Wikingerschach: Zug zurück');
+  await page.getByRole('button', { name: 'Aufgeben' }).click();
+  await page.locator('.wk-tile', { hasText: 'Lernen' }).click();
+  await page.waitForSelector('.wk-lesson');
+  await page.locator('.wk-hit').nth(1 * 7 + 1).click();
+  await page.locator('.wk-hit').nth(1 * 7 + 6).click();
+  await page.waitForSelector('.wk-res.ok');
+  await shot('wik-lesson');
+  ok(true, 'Wikingerschach: Lektion 1');
+  await page.getByRole('button', { name: 'Aufgaben' }).click();
+  await page.waitForSelector('.wk-puzzles');
+  await page.getByRole('button', { name: 'Lösung zeigen' }).click({ timeout: 30000 });
+  await page.waitForSelector('.wk-hint');
+  await shot('wik-puzzle');
+  ok(true, 'Wikingerschach: Aufgabe mit Lösung');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${e.message.split('\n')[0]}`); }

@@ -174,3 +174,30 @@ export function MauerCover() {
     </Frame>
   );
 }
+
+export function WikingerCover() {
+  return (
+    <Frame bg="#0a111d">
+      <defs>
+        <radialGradient id="wc-a" cx="30%" cy="10%" r="70%"><stop offset="0" stopColor="#3ddc97" stopOpacity=".5" /><stop offset="1" stopColor="#3ddc97" stopOpacity="0" /></radialGradient>
+        <radialGradient id="wc-b" cx="80%" cy="14%" r="60%"><stop offset="0" stopColor="#6a8cff" stopOpacity=".5" /><stop offset="1" stopColor="#6a8cff" stopOpacity="0" /></radialGradient>
+        <radialGradient id="wc-k" cx="38%" cy="32%" r="75%"><stop offset="0" stopColor="#fff1b8" /><stop offset=".55" stopColor="#e8c455" /><stop offset="1" stopColor="#a7781c" /></radialGradient>
+        <radialGradient id="wc-d" cx="38%" cy="32%" r="75%"><stop offset="0" stopColor="#59616f" /><stop offset=".6" stopColor="#2a2f38" /><stop offset="1" stopColor="#14171c" /></radialGradient>
+      </defs>
+      <rect width="120" height="160" fill="url(#wc-a)" /><rect width="120" height="160" fill="url(#wc-b)" />
+      {[[14, 18], [40, 9], [88, 14], [104, 30], [70, 24], [24, 40]].map(([x, y], i) => <circle key={i} cx={x} cy={y} r=".9" fill="#fff" opacity=".7" />)}
+      <path d="M0 110 L20 92 L38 104 L58 84 L80 102 L100 90 L120 106 V160 H0Z" fill="#0f1828" />
+      <g transform="translate(60 92)">
+        <circle r="30" fill="url(#wc-k)" stroke="#7a550d" strokeWidth="2.5" />
+        <circle r="22" fill="#f6e8b0" stroke="#a7781c" />
+        <path d="M-14 7L-17 -11L-7 -3L0 -16L7 -3L17 -11L14 7Z" fill="#b4811b" stroke="#6c4a0a" strokeWidth="1.2" />
+        <rect x="-14" y="9" width="28" height="4.6" rx="1.4" fill="#b4811b" stroke="#6c4a0a" />
+      </g>
+      <g transform="translate(22 118)"><circle r="14" fill="url(#wc-d)" stroke="#7b8596" strokeWidth="1.5" /><circle r="9" fill="#181b21" stroke="#4a5361" /><circle r="3.4" fill="#9aa4b4" /></g>
+      <g transform="translate(98 120)"><circle r="14" fill="url(#wc-d)" stroke="#7b8596" strokeWidth="1.5" /><circle r="9" fill="#181b21" stroke="#4a5361" /><circle r="3.4" fill="#9aa4b4" /></g>
+      <g transform="translate(88 56)"><circle r="11" fill="#dccaa0" stroke="#6f5524" strokeWidth="1.5" /><path d="M0 0L0 -11A11 11 0 0 1 11 0Z" fill="#a23b2b" /><path d="M0 0L0 11A11 11 0 0 1 -11 0Z" fill="#a23b2b" /><circle r="3" fill="#8a8f98" /></g>
+      <text x="60" y="30" textAnchor="middle" fontSize="12" fontFamily="'Almendra',Georgia,serif" fontWeight="700" fill="#d9b45a" letterSpacing="1">HNEFATAFL</text>
+      <text x="60" y="152" textAnchor="middle" fontSize="10" fontFamily="'Noto Sans Runic',serif" fill="#d9b45a" letterSpacing="3">ᚺᚾᛖᚠ</text>
+    </Frame>
+  );
+}
