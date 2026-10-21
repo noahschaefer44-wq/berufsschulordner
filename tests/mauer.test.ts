@@ -130,8 +130,9 @@ describe('Mauerbau – KI', () => {
     const s = newState({ n: 7, walls: 6 });
     s.pawn[1] = { r: 5, c: 3 }; s.pawn[0] = { r: 3, c: 3 };
     s.turn = 0;
-    const m = aiMove(s, 3);
-    expect(m.t === 'm' ? false : true).toBe(true);
+    // zeitunabhängig: großzügiges Zeitbudget, damit auch langsame Rechner Tiefe 3 erreichen
+    const best = scoreMoves(s, 3, 8, 60000)[0].m;
+    expect(best.t).not.toBe('m');
   });
 });
 

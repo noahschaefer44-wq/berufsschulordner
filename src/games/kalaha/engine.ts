@@ -312,9 +312,9 @@ export function makePuzzle(r: Rules, rnd: Rng, tries = 200): Puzzle | null {
     if (p.over) continue;
     const ms = legalMoves(p);
     if (ms.length < 3) continue;
-    const a = scoreMoves(p, 9, 400);
+    const a = scoreMoves(p, 9, 8000);
     if (a.length < 3) continue;
-    const b = scoreMoves(p, 6, 400);
+    const b = scoreMoves(p, 6, 8000);
     if (b[0].i !== a[0].i) continue;
     const margin = (a[0].score - a[1].score) / 10;
     if (margin >= 1.5 && margin <= 30) return { pos: p, best: [a[0].i], margin, title: 'Welche Mulde ist hier der beste Zug?' };
