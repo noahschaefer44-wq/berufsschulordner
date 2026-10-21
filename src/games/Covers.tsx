@@ -201,3 +201,26 @@ export function WikingerCover() {
     </Frame>
   );
 }
+
+export function WabeCover() {
+  const hex = (r: number) => Array.from({ length: 6 }, (_, i) => { const a = (Math.PI / 180) * (60 * i - 30); return `${(r * Math.cos(a)).toFixed(1)},${(r * Math.sin(a)).toFixed(1)}`; }).join(' ');
+  return (
+    <Frame bg="#f3d98e">
+      <defs>
+        <linearGradient id="wc0" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#fff2c4" /><stop offset="1" stopColor="#f0c75a" /></linearGradient>
+        <linearGradient id="wc1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#4a4038" /><stop offset="1" stopColor="#1e1814" /></linearGradient>
+        <pattern id="wcp" width="28" height="48.5" patternUnits="userSpaceOnUse"><path d="M14 1L27 8.5V23.5L14 31L1 23.5V8.5Z M14 31V47.5" fill="none" stroke="#b07614" strokeOpacity=".18" strokeWidth="1.2" /></pattern>
+      </defs>
+      <rect width="120" height="160" fill="url(#wcp)" />
+      <g transform="translate(60 70)"><polygon points={hex(38)} fill="url(#wc0)" stroke="#6a4310" strokeWidth="2" /><polygon points={hex(32)} fill="none" stroke="rgba(255,255,255,.5)" />
+        <ellipse cx="-12" cy="-8" rx="13" ry="7" transform="rotate(-32 -12 -8)" fill="rgba(255,255,255,.7)" stroke="#3b2410" strokeWidth="1.2" />
+        <ellipse cx="12" cy="-8" rx="13" ry="7" transform="rotate(32 12 -8)" fill="rgba(255,255,255,.7)" stroke="#3b2410" strokeWidth="1.2" />
+        <ellipse cx="0" cy="6" rx="11" ry="17" fill="#3b2410" /><path d="M-10 3H10M-9 10H9M-7 17H7" stroke="#f2b84b" strokeWidth="3" /><circle cx="0" cy="-13" r="7" fill="#3b2410" />
+        <path d="M-7 -19L-6 -27L-2 -22L0 -28L2 -22L6 -27L7 -19Z" fill="#e0a100" stroke="#7a5300" strokeWidth="1.2" />
+      </g>
+      <g transform="translate(26 126)"><polygon points={hex(21)} fill="url(#wc1)" stroke="#000" strokeOpacity=".5" /><ellipse cy="3" rx="6" ry="8" fill="#f2b84b" /><circle cy="-9" r="4" fill="#f2b84b" /><path d="M-4 -2L-12 -6M4 -2L12 -6M-4 3L-12 7M4 3L12 7" stroke="#f2b84b" strokeWidth="1.6" /></g>
+      <g transform="translate(96 124)"><polygon points={hex(21)} fill="url(#wc0)" stroke="#6a4310" /><circle r="10" fill="#c9382b" stroke="#1d1105" /><path d="M0 -10V10" stroke="#1d1105" strokeWidth="1.6" /><circle cx="-4" cy="-2" r="2" fill="#1d1105" /><circle cx="4" cy="2" r="2" fill="#1d1105" /></g>
+      <text x="60" y="22" textAnchor="middle" fontSize="15" fontFamily="'Fredoka',sans-serif" fontWeight="600" fill="#3b2410" letterSpacing="1">WABE</text>
+    </Frame>
+  );
+}

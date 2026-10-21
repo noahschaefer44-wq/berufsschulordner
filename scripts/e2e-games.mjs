@@ -373,9 +373,49 @@ games.wikinger = async () => {
   await shot('wik-puzzle');
   ok(true, 'Wikingerschach: Aufgabe mit Lösung');
 };
+games.wabe = async () => {
+  await page.locator('.gh-box[data-game="wabe"]').click();
+  await page.waitForSelector('.wb-setup');
+  await shot('wabe-menu');
+  await page.getByRole('button', { name: 'Schwarm starten' }).click();
+  await page.waitForSelector('.wb-board');
+  // erster Zug: Ameise aus dem Vorrat in die Mitte
+  await page.locator('.wb-tray.c0 .wb-hand', { hasText: '' }).nth(3).click();
+  await page.waitForSelector('.wb-target');
+  await page.locator('.wb-hit.t').first().click();
+  await page.waitForFunction(() => document.querySelectorAll('.wb-moves .mv').length >= 2, null, { timeout: 20000 });
+  ok(true, 'Wabe: Setzen und KI-Antwort');
+  await page.locator('.wb-tray.c0 .wb-hand').nth(2).click();
+  await page.waitForSelector('.wb-target');
+  await page.locator('.wb-hit.t').first().click();
+  await page.waitForFunction(() => document.querySelectorAll('.wb-moves .mv').length >= 4, null, { timeout: 20000 });
+  await shot('wabe-play');
+  ok(true, 'Wabe: zweiter Zug');
+  await page.getByRole('button', { name: 'Tipp' }).click();
+  await page.waitForSelector('.wb-hint');
+  ok(true, 'Wabe: Tipp');
+  await page.getByRole('button', { name: 'Zurück', exact: true }).click();
+  await page.waitForFunction(() => document.querySelectorAll('.wb-moves .mv').length <= 2, null, { timeout: 5000 });
+  ok(true, 'Wabe: Zug zurück');
+  await page.getByRole('button', { name: 'Aufgeben' }).click();
+  await page.locator('.wb-tile', { hasText: 'Lernen' }).click();
+  await page.waitForSelector('.wb-lesson');
+  await page.locator('.wb-tray .wb-hand').nth(3).click();
+  await page.waitForSelector('.wb-target');
+  await page.locator('.wb-hit.t').first().click();
+  await page.waitForSelector('.wb-res.ok');
+  await shot('wabe-lesson');
+  ok(true, 'Wabe: Lektion 1');
+  await page.getByRole('button', { name: 'Aufgaben' }).click();
+  await page.waitForSelector('.wb-puzzles');
+  await page.getByRole('button', { name: 'Lösung zeigen' }).click({ timeout: 40000 });
+  await page.waitForSelector('.wb-hint');
+  await shot('wabe-puzzle');
+  ok(true, 'Wabe: Aufgabe mit Lösung');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
-  try { await fn(); } catch (e) { ok(false, `${name}: ${e.message.split('\n')[0]}`); }
+  try { await fn(); } catch (e) { ok(false, `${name}: ${String(e.message).split('\n')[0]}`); await shot('FAIL-' + name); }
   await page.goto(BASE);
   await page.getByLabel('Einstellungen').click();
   for (let i = 0; i < 3; i++) await page.getByRole('button', { name: /^Speicher/ }).click();
