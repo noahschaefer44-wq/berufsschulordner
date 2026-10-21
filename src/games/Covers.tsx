@@ -224,3 +224,27 @@ export function WabeCover() {
     </Frame>
   );
 }
+
+export function KalahaCover() {
+  const seed = ['#2fb5a6', '#e8604c', '#f2b84b', '#5a6bdf', '#efe8d4'];
+  const pits: React.ReactNode[] = [];
+  for (let r = 0; r < 2; r++) for (let c = 0; c < 3; c++) {
+    const cx = 32 + c * 28, cy = 92 + r * 30;
+    pits.push(<g key={`${r}${c}`}><circle cx={cx} cy={cy} r="12" fill="#3d2410" stroke="rgba(255,240,200,.45)" strokeWidth="1.2" />{[0, 1, 2, 3].map((j) => <circle key={j} cx={cx + Math.cos(j * 2.4) * 5} cy={cy + Math.sin(j * 2.4) * 5} r="3.2" fill={seed[(c + r + j) % 5]} stroke="rgba(30,15,0,.4)" strokeWidth=".6" />)}</g>);
+  }
+  return (
+    <Frame bg="#e2c795">
+      <defs><linearGradient id="klc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#d8b072" /><stop offset="1" stopColor="#b58446" /></linearGradient>
+        <radialGradient id="kls" cx="50%" cy="20%" r="80%"><stop offset="0" stopColor="#f6e1b0" /><stop offset="1" stopColor="#e2c795" /></radialGradient></defs>
+      <rect width="120" height="160" fill="url(#kls)" />
+      <path d="M0 140C30 120 60 150 120 125V160H0Z" fill="#c2562d" opacity=".5" />
+      <circle cx="92" cy="26" r="13" fill="#c2562d" opacity=".85" />
+      <rect x="8" y="70" width="104" height="82" rx="14" fill="url(#klc)" stroke="#6b4720" strokeWidth="1.5" />
+      <rect x="11" y="94" width="14" height="34" rx="7" fill="#3d2410" /><rect x="95" y="94" width="14" height="34" rx="7" fill="#3d2410" />
+      {[0, 1, 2, 3, 4].map((j) => <circle key={j} cx="102" cy={122 - j * 5.4} r="3" fill={seed[j]} />)}
+      {pits}
+      <text x="60" y="48" textAnchor="middle" fontSize="19" fontFamily="'Marcellus',Georgia,serif" fill="#3a2410" letterSpacing="2">KALAHA</text>
+      <text x="60" y="62" textAnchor="middle" fontSize="7" fontFamily="'Josefin Sans',sans-serif" fill="#7a5a36" letterSpacing="1.5">MULDEN · SAMEN · SPEICHER</text>
+    </Frame>
+  );
+}

@@ -413,6 +413,39 @@ games.wabe = async () => {
   await shot('wabe-puzzle');
   ok(true, 'Wabe: Aufgabe mit Lösung');
 };
+games.kalaha = async () => {
+  await page.locator('.gh-box[data-game="kalaha"]').click();
+  await page.waitForSelector('.kl-setup');
+  await shot('kal-menu');
+  await page.getByRole('button', { name: 'Spiel beginnen' }).click();
+  await page.waitForSelector('.kl-board');
+  // Mulde 3 hat vier Samen: Extrazug, danach nochmal
+  await page.keyboard.press('3');
+  await page.waitForSelector('.kl-extra', { timeout: 15000 });
+  ok(true, 'Kalaha: Extrazug');
+  await page.keyboard.press('1');
+  await page.waitForFunction(() => document.querySelectorAll('.kl-moves li').length >= 3, null, { timeout: 25000 });
+  await shot('kal-play');
+  ok(true, 'Kalaha: Zug und KI-Antwort');
+  await page.getByRole('button', { name: 'Tipp' }).click();
+  await page.waitForSelector('.kl-pit.hint');
+  ok(true, 'Kalaha: Tipp');
+  await page.getByRole('button', { name: 'Zurück', exact: true }).click();
+  await page.waitForFunction(() => document.querySelectorAll('.kl-moves li').length <= 1, null, { timeout: 5000 });
+  ok(true, 'Kalaha: Zug zurück');
+  await page.getByRole('button', { name: 'Aufgeben' }).click();
+  await page.locator('.kl-tile', { hasText: 'Lernen' }).click();
+  await page.waitForSelector('.kl-lesson');
+  await page.locator('.kl-hit').nth(3).click();
+  await page.waitForSelector('.kl-res.ok');
+  await shot('kal-lesson');
+  ok(true, 'Kalaha: Lektion 1');
+  await page.getByRole('button', { name: 'Aufgaben' }).click();
+  await page.waitForSelector('.kl-puzzles');
+  await page.getByRole('button', { name: 'Lösung zeigen' }).click({ timeout: 40000 });
+  await page.waitForSelector('.kl-pit.hint');
+  ok(true, 'Kalaha: Aufgabe mit Lösung');
+};
 for (const [name, fn] of Object.entries(games)) {
   if (only.length && !only.includes(name)) continue;
   try { await fn(); } catch (e) { ok(false, `${name}: ${String(e.message).split('\n')[0]}`); await shot('FAIL-' + name); }

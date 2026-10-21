@@ -10,6 +10,7 @@ export interface GameMeta {
 
 export const GAMES: GameMeta[] = [
   { id: 'wabe', name: 'Wabe', tagline: 'Ein Spiel ohne Brett: Insekten-Plättchen, Schwarm-Regeln, Königin einschließen.', genre: 'Strategie' },
+  { id: 'kalaha', name: 'Kalaha', tagline: 'Mancala: Kalah, Oware und Lawine – mit Vorschau, Coach und Aufgaben.', genre: 'Brettspiel' },
   { id: 'wikinger', name: 'Wikingerschach', tagline: 'Hnefatafl: König gegen Räuber – drei Bretter, KI, Skalde und Aufgaben.', genre: 'Brettspiel' },
   { id: 'mauer', name: 'Mauerbau', tagline: 'Wettlauf mit Mauern: Quoridor mit KI, Coach, Aufgaben und Labyrinth.', genre: 'Brettspiel' },
   { id: 'go', name: 'Go', tagline: 'Das Brettspiel der Steine – lernen, spielen, meistern.', genre: 'Brettspiel' },

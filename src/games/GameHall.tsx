@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useRef, useState, type ComponentType } from 
 import '@fontsource/dm-serif-display';
 import '@fontsource/dm-sans/400.css';
 import '@fontsource/dm-sans/700.css';
-import { WabeCover, WikingerCover, MauerCover, BlockCover, GammonCover, GoCover, KartenCover, PokerCover, SchiffCover, CodeCover, SnakeCover } from './Covers';
+import { KalahaCover, WabeCover, WikingerCover, MauerCover, BlockCover, GammonCover, GoCover, KartenCover, PokerCover, SchiffCover, CodeCover, SnakeCover } from './Covers';
 import { ACHIEVEMENTS, GAMES, SECRETS } from './shared/meta';
 import { dailyDone, dailyStreak, fmtTime, hallReplace, hallReset, toast, useHall, hallData, hallUpdate } from './shared/store';
 import { sfx } from './shared/sfx';
@@ -11,6 +11,7 @@ import './hall.css';
 export interface GameProps { onExit: () => void; daily?: boolean }
 
 const LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> }>> = {
+  kalaha: () => import('./kalaha/KalahaGame'),
   wabe: () => import('./wabe/WabeGame'),
   wikinger: () => import('./wikinger/WikGame'),
   mauer: () => import('./mauer/MauerGame'),
@@ -25,8 +26,8 @@ const LOADERS: Record<string, () => Promise<{ default: ComponentType<GameProps> 
 };
 const LAZY: Record<string, ComponentType<GameProps>> = Object.fromEntries(Object.entries(LOADERS).map(([k, f]) => [k, lazy(f)]));
 
-const COVERS: Record<string, () => React.ReactElement> = { wabe: WabeCover, wikinger: WikingerCover, mauer: MauerCover, block: BlockCover, karten: KartenCover, go: GoCover, gammon: GammonCover, schiff: SchiffCover, poker: PokerCover, code: CodeCover, snake: SnakeCover };
-const DAILY = ['mauer', 'wikinger', 'wabe', 'go', 'gammon', 'schiff', 'poker', 'code', 'snake'];
+const COVERS: Record<string, () => React.ReactElement> = { kalaha: KalahaCover, wabe: WabeCover, wikinger: WikingerCover, mauer: MauerCover, block: BlockCover, karten: KartenCover, go: GoCover, gammon: GammonCover, schiff: SchiffCover, poker: PokerCover, code: CodeCover, snake: SnakeCover };
+const DAILY = ['mauer', 'wikinger', 'wabe', 'kalaha', 'go', 'gammon', 'schiff', 'poker', 'code', 'snake'];
 const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
 type View = 'regal' | 'erfolge' | 'geheimnisse' | 'optionen';
