@@ -113,7 +113,7 @@ export function PokerCover() {
       <g transform="translate(70 78) rotate(10)"><rect x="-14" y="-20" width="28" height="40" rx="3" fill="#fbf8ef" /><text x="-9" y="-6" fontSize="13" fontFamily="'Playfair Display',Georgia,serif" fontWeight="700" fill="#b3261e">K</text><text x="0" y="11" textAnchor="middle" fontSize="17" fill="#b3261e">♥</text></g>
       <g><circle cx="38" cy="112" r="6" fill="#ff2e88" stroke="#fff" strokeWidth="1.4" /><circle cx="48" cy="114" r="6" fill="#20e3d0" stroke="#fff" strokeWidth="1.4" /><circle cx="82" cy="114" r="6" fill="#ffd36a" stroke="#fff" strokeWidth="1.4" /></g>
       <text x="60" y="26" textAnchor="middle" fontSize="22" fontFamily="'Bebas Neue',sans-serif" letterSpacing="3" fill="#ff2e88">POKER</text>
-      <text x="60" y="148" textAnchor="middle" fontSize="8" fontFamily="'IBM Plex Sans',sans-serif" letterSpacing="1.5" fill="#a894c9">HOLD’EM · OMAHA · SHORT DECK</text>
+      <text x="60" y="148" textAnchor="middle" fontSize="8" fontFamily="'IBM Plex Sans',sans-serif" letterSpacing="1" fill="#a894c9">TEXAS HOLD’EM · OMAHA</text>
     </Frame>
   );
 }

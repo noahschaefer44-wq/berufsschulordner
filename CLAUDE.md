@@ -75,10 +75,10 @@ CI (`.github/workflows/ci.yml`) führt Typecheck, Build, Glossar- und Inhaltspr�
 
 ## Spielhalle (versteckt, `src/games/`)
 - Zugang: Einstellungen → dreimal schnell auf die Zeile „Speicher“ tippen (`Cover.tsx` → `Gate` Modus `games`). Nicht mit Schach/Tipptraining mischen; eigener Speicher `gh.v1` (`shared/store.ts`), Daten je Spiel in `games[id]`.
-- Sieben Spiele, lazy über `LOADERS` in `GameHall.tsx`: Minenfeld (`minen`), Rätselheft/Sudoku (`sudoku`), Bildrätsel/Nonogramm (`bild`), Lagerhaus/Sokoban (`lager`), Blockfall (`block`), Patience (`karten`), Go (`go`). Neues Spiel: Ordner, Eintrag in `shared/meta.ts` (GAMES), `LOADERS`, `COVERS` (`Covers.tsx`); Erfolge/Geheimnisse per `addAchievements`/`addSecrets` in der `data.ts` des Spiels.
-- Jedes Spiel hat ein eigenes Design (Win98, Zeitung, Mondrian, Warnstreifen, Neon-Terminal, Spielfilz, Washi/Sumi) – die Schach-Designregeln (schwarz/weiß, eckig) gelten hier **nicht**. Die Klasse `.gh` ist in `global.css` von der Eckenregel ausgenommen.
+- Acht Spiele, lazy über `LOADERS` in `GameHall.tsx` (Reihenfolge in `shared/meta.ts`): Go (`go`), Backgammon (`gammon`), Poker (`poker`), Seeschlacht (`schiff`), Code-Knacker (`code`), Schlange (`snake`), Blockfall (`block`), Patience (`karten`). Die früheren Logik-Rätsel (Minenfeld, Sudoku, Nonogramm, Sokoban) wurden entfernt, weil sie sich überschnitten. Neues Spiel: Ordner, Eintrag in `shared/meta.ts` (GAMES), `LOADERS`, `COVERS` (`Covers.tsx`), `DAILY` falls es ein Tagesspiel hat; Erfolge/Geheimnisse per `addAchievements`/`addSecrets` in der `data.ts` des Spiels (Geheimwörter pro Spiel eindeutig wählen).
+- Jedes Spiel hat ein eigenes Design (Washi/Sumi, Herrenzimmer-Mahagoni, Neon-Bar, Radarschirm, Braun-Industriedesign, Handy-LCD, Neon-Terminal, Spielfilz) – die Schach-Designregeln (schwarz/weiß, eckig) gelten hier **nicht**. Die Klasse `.gh` ist in `global.css` von der Eckenregel ausgenommen.
 - Geheimwörter (`useSecrets`) und Konami-Code (Halle) schalten Hilfen/Entwicklermenü frei; Hilfen zählen nicht für Erfolge.
-- Reine Logik ist getestet (`tests/minen|sudoku|bild|lager|block|karten|go*.test.ts`); schwere Erzeugung/KI läuft in Web Workern mit Sync-Fallback. E2E: `scripts/e2e-games.mjs` (`E2E_ONLY=go`, `E2E_CHANNEL=msedge`).
+- Reine Logik ist getestet (`tests/block|karten|go*|gammon*|poker*|schiff|code|snake.test.ts`); schwere KI läuft in Web Workern mit Sync-Fallback (Go, Backgammon). E2E: `scripts/e2e-games.mjs` (`E2E_ONLY=go`, `E2E_CHANNEL=msedge`).
 
 ## Deploy
 - Git-Branch: **`chessty-app`** (Remote `noahschaefer44-wq/berufsschulordner`, öffentlich wegen GPL, Standard-Branch). Push: `git push -u origin chessty-app`.

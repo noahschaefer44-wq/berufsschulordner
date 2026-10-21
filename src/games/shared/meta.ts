@@ -9,14 +9,14 @@ export interface GameMeta {
 }
 
 export const GAMES: GameMeta[] = [
-  { id: 'block', name: 'Blockfall', tagline: 'Fallende Steine, vom Anfänger bis zum Duell.', genre: 'Arcade' },
-  { id: 'karten', name: 'Patience', tagline: 'Klondike, FreeCell, Spider, Pyramide, TriPeaks.', genre: 'Karten' },
-  { id: 'snake', name: 'Schlange', tagline: 'Snake mit Kampagne, KI-Duell, Editor und Power-ups.', genre: 'Arcade' },
-  { id: 'code', name: 'Code-Knacker', tagline: 'Mastermind: knacken, verstecken, Duell – gegen einen Knuth-Löser.', genre: 'Denken' },
+  { id: 'go', name: 'Go', tagline: 'Das Brettspiel der Steine – lernen, spielen, meistern.', genre: 'Brettspiel' },
+  { id: 'gammon', name: 'Backgammon', tagline: 'Würfel, Doppelwürfel und Match – mit Coach und Eröffnungsbuch.', genre: 'Brettspiel' },
   { id: 'poker', name: 'Poker', tagline: 'Hold’em, Omaha, Short Deck – Bots mit Charakter, Trainer und Turniere.', genre: 'Karten' },
   { id: 'schiff', name: 'Seeschlacht', tagline: 'Schiffe versenken: Salven, Nebel, Radar – mit Kampagne.', genre: 'Strategie' },
-  { id: 'gammon', name: 'Backgammon', tagline: 'Würfel, Doppelwürfel und Match – mit Coach und Eröffnungsbuch.', genre: 'Brettspiel' },
-  { id: 'go', name: 'Go', tagline: 'Das Brettspiel der Steine – lernen, spielen, meistern.', genre: 'Brettspiel' },
+  { id: 'code', name: 'Code-Knacker', tagline: 'Mastermind: knacken, verstecken, Duell – gegen einen Knuth-Löser.', genre: 'Denken' },
+  { id: 'snake', name: 'Schlange', tagline: 'Snake mit Kampagne, KI-Duell, Editor und Power-ups.', genre: 'Arcade' },
+  { id: 'block', name: 'Blockfall', tagline: 'Fallende Steine, vom Anfänger bis zum Duell.', genre: 'Arcade' },
+  { id: 'karten', name: 'Patience', tagline: 'Klondike, FreeCell, Spider, Pyramide, TriPeaks.', genre: 'Karten' },
 ];
 
 export interface Achievement { game: string; key: string; name: string; desc: string }
